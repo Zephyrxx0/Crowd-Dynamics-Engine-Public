@@ -91,6 +91,11 @@ The upgrade from pre-event planning to live operations adds:
 
 Architecture principle: simulation state (`simulationStore`) is the single source of truth. Both ops AI and fan chatbot read from the same store.
 
+- Transitioned from Vite+Nginx to Next.js standalone (D-01, D-03)
+- Server runtime via Next.js API route handlers (D-08)
+- Store architecture via Zustand store with slices (D-05)
+- Type system via Zod schemas per domain (D-11, D-12)
+
 ## Constraints
 
 - **Timeline**: About 13 days — hackathon window requires strict MVP-first sequencing.
@@ -112,6 +117,18 @@ Architecture principle: simulation state (`simulationStore`) is the single sourc
 | Claude for both ops alerts and fan chat | Same model, different system prompts, same sim state | — Pending |
 | SSE for AI streaming | Simpler than WebSockets, server-to-client streaming is the right fit | — Pending |
 | Server-side proxy for third-party APIs | Never call worldcup26.ir or OWM from client | — Pending |
+| Migrate fully to Next.js, drop Vite | Next.js already in deps, provides API routes natively, single process (no Express) | ✓ Decided per D-01 |
+| Hybrid migration path — v1 pages as client components, v2 routes as App Router | Zero-cost coexistence; existing React Router code works as client components in shared layout | ✓ Decided per D-02 |
+| Deploy as Next.js standalone output on Cloud Run | output:'standalone' produces a Node server; no nginx needed | ✓ Decided per D-03 |
+| Remove nginx from deployment | Next.js standalone server listens directly on PORT; nginx adds proxy complexity | ✓ Decided per D-04 |
+| Single Zustand store with slices (sim/match/weather/alert/chat) | Slice pattern enables cross-slice coordination without circular dependencies | ✓ Decided per D-05 |
+| Lazy init simSlice on first dashboard access | Zone data loaded when ops dashboard mounts, not at app root | ✓ Decided per D-06 |
+| Ephemeral in-memory for all v2 slices | No localStorage; avoids stale alert/chat data across page loads | ✓ Decided per D-07 |
+| One Next.js API route per service (/api/match, /api/weather, /api/alert, /api/chat) | File-based routing keeps each endpoint isolated and independently testable | ✓ Decided per D-08 |
+| SSE via native Response + ReadableStream | No Express or SSE library needed; Cloud Run standalone has no nginx to interfere | ✓ Decided per D-09 |
+| Docker: single-stage node:22-alpine with output:standalone | Clean minimal image; server.js entry point respects PORT/HOSTNAME env vars | ✓ Decided per D-10 |
+| Zod schemas for all new types (not plain TS interfaces) | Runtime validation at API boundaries; replicates existing src/simulation/contracts/ pattern | ✓ Decided per D-11 |
+| Per-domain type files (src/types/*.ts) with barrel export | Avoids monolithic live.ts; clear domain boundaries via separate modules | ✓ Decided per D-12 |
 
 ## Evolution
 
