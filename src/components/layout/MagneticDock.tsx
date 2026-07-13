@@ -117,7 +117,7 @@ export function MagneticDock({ activeTab, onTabChange }: { activeTab: string, on
                 aria-label={item.label}
                 title={item.label}
               >
-                <Icon className={cn("size-5", isActive ? "text-primary" : "")} aria-hidden="true" />
+                <Icon className={cn("size-5", isActive ? "text-primary" : "")} aria-hidden={true} />
                 <span className="sr-only">{item.label}</span>
               </button>
             </li>

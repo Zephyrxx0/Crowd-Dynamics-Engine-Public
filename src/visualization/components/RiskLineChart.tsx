@@ -66,8 +66,8 @@ export function RiskLineChart({ output }: RiskLineChartProps) {
   const lineBuilder = useMemo(
     () =>
       line<{ phaseId: string; occupancyRatio: number }>()
-        .x((point) => xScale(point.phaseId) ?? CHART_SIZE.marginLeft)
-        .y((point) => yScale(point.occupancyRatio)),
+        .x((point: { phaseId: string; occupancyRatio: number }) => xScale(point.phaseId) ?? CHART_SIZE.marginLeft)
+        .y((point: { phaseId: string; occupancyRatio: number }) => yScale(point.occupancyRatio)),
     [xScale, yScale],
   )
 

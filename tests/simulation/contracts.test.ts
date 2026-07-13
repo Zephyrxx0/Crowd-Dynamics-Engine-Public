@@ -52,7 +52,6 @@ describe("simulation contracts", () => {
   it("rejects detailed mode payload when two-sub-zone metadata is not explicit", () => {
     const missingDetailed = createBaseInput({
       mode: "detailed",
-      // @ts-expect-error - intentional negative payload
       detailed: undefined,
     })
 

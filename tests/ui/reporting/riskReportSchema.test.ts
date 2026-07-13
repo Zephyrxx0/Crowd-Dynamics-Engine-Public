@@ -10,7 +10,7 @@ describe("risk report schema", () => {
 
     const parsed = RiskReportSchema.parse(fallback)
     expect(parsed.source).toBe("fallback")
-    expect(Object.keys(parsed)).toEqual(expect.arrayContaining(RiskReportSectionKeys))
+    expect(Object.keys(parsed)).toEqual(expect.arrayContaining([...RiskReportSectionKeys]))
   })
 
   it("rejects payloads with missing required sections", () => {

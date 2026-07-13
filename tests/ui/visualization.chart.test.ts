@@ -143,8 +143,8 @@ describe("RiskLineChart", () => {
         ChartRevealShell,
         {
           label: "Risk chart",
-        },
-        React.createElement("div", { "data-testid": "chart-child" }, "chart"),
+          children: React.createElement("div", { "data-testid": "chart-child" }, "chart"),
+        }
       ),
     )
 

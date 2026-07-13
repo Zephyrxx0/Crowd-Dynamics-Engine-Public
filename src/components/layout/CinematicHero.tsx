@@ -17,7 +17,7 @@ export function CinematicHero({ onNavigate }: { onNavigate: (tab: string) => voi
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center text-center px-6">
-        <Kino className="flex flex-col items-center">
+        <Kino>
           <Scene duration="10vh" pin={false} className="mb-8">
             <div className="inline-flex items-center gap-2 rounded-none border border-primary bg-primary/10 px-4 py-1.5 text-sm font-bold uppercase tracking-widest text-primary shadow-[0_0_15px_rgba(236,78,2,0.2)]">
               <Sparkles className="size-4" />
@@ -25,7 +25,7 @@ export function CinematicHero({ onNavigate }: { onNavigate: (tab: string) => voi
             </div>
           </Scene>
 
-          <Reveal animation="fade-up" at={0} progress={1} duration={200} stagger={0.15}>
+          <Reveal animation="fade-up" at={0} progress={1} duration={200}>
             <h1 className="mb-6 max-w-4xl text-5xl font-black uppercase tracking-tight text-white md:text-7xl lg:text-8xl" style={{ textShadow: "0 0 40px rgba(0,0,0,0.8)" }}>
               Crowd Dynamics <span className="text-primary drop-shadow-[0_0_15px_rgba(236,78,2,0.6)]">Engine</span>
             </h1>
