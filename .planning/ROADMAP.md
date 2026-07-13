@@ -42,7 +42,7 @@
 Plans:
 
 - [x] 13-01-PLAN.md — Type definitions (Zod schemas) + build config (standalone, Docker, scripts)
-- [ ] 13-02-PLAN.md — Zustand store architecture (5 slices + combined store)
+- [x] 13-02-PLAN.md — Zustand store architecture (5 slices + combined store)
 - [ ] 13-03-PLAN.md — API route skeletons + PROJECT.md decision documentation
 
 ### Phase 14: Server Runtime + Match Polling
@@ -256,7 +256,7 @@ v2.0 phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 | 10. Verification Evidence Backfill (UI and Governance Phases 06-08) | v1.0 | 2/2 | Complete | 2026-04-20 |
 | 11. Integration Matrix Revalidation and Milestone Readiness | v1.0 | 1/1 | Complete | 2026-04-20 |
 | 12. Webpage Design Rehaul | v1.0 | 3/3 | Complete | 2026-04-20 |
-| 13. Foundation & Architecture Decision | v2.0 | 1/3 | In Progress|  |
+| 13. Foundation & Architecture Decision | v2.0 | 2/3 | In Progress|  |
 | 14. Server Runtime + Match Polling | v2.0 | 0/0 | Not started | - |
 | 15. AI Alert Stream | v2.0 | 0/0 | Not started | - |
 | 16. Fan Chatbot | v2.0 | 0/0 | Not started | - |
