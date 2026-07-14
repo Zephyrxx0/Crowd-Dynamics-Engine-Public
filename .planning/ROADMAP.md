@@ -52,13 +52,18 @@ Plans:
 **Requirements**: LIVE-01, LIVE-03, INT-02, DEP-04
 **Success Criteria** (what must be TRUE):
 
-  1. Ops dashboard displays live match score, phase, and minute in a MatchBanner component
-  2. Match data from worldcup26.ir is fetched every 30s via `/api/match` proxy and updates simulation state
-  3. Simulation store (`simulationStore`) initializes with existing zone data from v1 engine
-  4. Application serves from the new server runtime (Express or Next.js) with environment variables configured
+   1. Ops dashboard displays live match score, phase, and minute in a MatchBanner component
+   2. Match data from worldcup26.ir is fetched every 30s via `/api/match` proxy and updates simulation state
+   3. Simulation store (`simulationStore`) initializes with existing zone data from v1 engine
+   4. Application serves from the new server runtime (Express or Next.js) with environment variables configured
 
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 4 plans
+
+Plans:
+- [ ] 14-01-PLAN.md — Data mapping layer: Zod schemas, types, mapping functions, live match heuristic
+- [ ] 14-02-PLAN.md — /api/match proxy: server-side route handler with Zod validation + error handling
+- [ ] 14-03-PLAN.md — useMatchPoller hook: polling with exponential backoff retry + Page Visibility pause
+- [ ] 14-04-PLAN.md — MatchBanner + dashboard layout: hero card, route group, sim init wiring
 
 ### Phase 15: AI Alert Stream
 
@@ -257,7 +262,7 @@ v2.0 phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 | 11. Integration Matrix Revalidation and Milestone Readiness | v1.0 | 1/1 | Complete | 2026-04-20 |
 | 12. Webpage Design Rehaul | v1.0 | 3/3 | Complete | 2026-04-20 |
 | 13. Foundation & Architecture Decision | v2.0 | 3/3 | Complete   | 2026-07-13 |
-| 14. Server Runtime + Match Polling | v2.0 | 0/0 | Not started | - |
+| 14. Server Runtime + Match Polling | v2.0 | 0/4 | Planning complete | - |
 | 15. AI Alert Stream | v2.0 | 0/0 | Not started | - |
 | 16. Fan Chatbot | v2.0 | 0/0 | Not started | - |
 | 17. Weather Integration | v2.0 | 0/0 | Not started | - |
