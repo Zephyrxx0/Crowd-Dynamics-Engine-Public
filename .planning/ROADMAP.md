@@ -73,12 +73,17 @@ Plans:
 **Requirements**: AIAL-01, AIAL-02
 **Success Criteria** (what must be TRUE):
 
-  1. Ops dashboard displays live AI alerts categorized by severity (nominal, warning, critical) in an AlertFeed component
-  2. Alert feed updates automatically as new alerts arrive via SSE, with auto-scroll to latest
-  3. Alerts are visually distinct by severity level (color, icon, urgency treatment)
-  4. AbortController cancels alert generation on component unmount or page navigation
+   1. Ops dashboard displays live AI alerts categorized by severity (nominal, warning, critical) in an AlertFeed component
+   2. Alert feed updates automatically as new alerts arrive via SSE, with auto-scroll to latest
+   3. Alerts are visually distinct by severity level (color, icon, urgency treatment)
+   4. AbortController cancels alert generation on component unmount or page navigation
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 15-01-PLAN.md — Server-Side Alert Pipeline (Gemini utility, prompt builder, SSE route handler)
+- [ ] 15-02-PLAN.md — Client-Side Alert Infrastructure (alertSlice FIFO, useAlertStream hook, AlertFeed component)
+- [ ] 15-03-PLAN.md — Dashboard Integration + Eval Setup (wire into dashboard, promptfoo config, env vars)
 **UI hint**: yes
 
 ### Phase 16: Fan Chatbot
