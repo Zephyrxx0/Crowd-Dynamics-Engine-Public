@@ -10,6 +10,6 @@ export interface AlertSlice {
 
 export const createAlertSlice: StateCreator<LiveStore, [], [], AlertSlice> = (set) => ({
   alerts: [],
-  addAlert: (alert) => set((state) => ({ alerts: [...state.alerts, alert] })),
+  addAlert: (alert) => set((state) => ({ alerts: [...state.alerts, alert].slice(-50) })),
   clearAlerts: () => set({ alerts: [] }),
 });
