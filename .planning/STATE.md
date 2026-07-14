@@ -6,14 +6,14 @@ current_phase: 15
 current_phase_name: ai-alert-stream
 status: executing
 stopped_at: Phase 15 context gathered
-last_updated: "2026-07-14T19:03:44.012Z"
+last_updated: "2026-07-14T19:07:53.224Z"
 last_activity: 2026-07-14
 last_activity_desc: Phase 15 execution started
 progress:
   total_phases: 18
   completed_phases: 12
   total_plans: 40
-  completed_plans: 36
+  completed_plans: 37
   percent: 67
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-07-13)
 ## Current Position
 
 Phase: 15 (ai-alert-stream) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-07-14 — Phase 15 execution started
 
@@ -57,8 +57,8 @@ Progress: [░░░░░░░░░░] 0%
 
 Full list: .planning/phases/14-server-runtime-match-polling/14-CONTEXT.md## Session Continuity
 
-Last session: 2026-07-14T19:03:43.991Z
-Stopped at: Completed 15-01-PLAN.md
+Last session: 2026-07-14T19:07:53.205Z
+Stopped at: Completed 15-02-PLAN.md
 Resume file: None
 
 ## Session Continuity
@@ -76,6 +76,7 @@ Resume file: .planning/phases/14-server-runtime-match-polling/14-UI-SPEC.md
 | Phase 14 P03 | 10 min | 2 tasks | 2 files |
 | Phase 14 P04 | 15 min | 3 tasks | 6 files |
 | Phase 15 P01 | 5 min | 3 tasks | 6 files |
+| Phase 15 P02 | 5 min | 3 tasks | 6 files |
 
 ## Decisions
 
@@ -479,6 +480,72 @@ coverage:
 # Phase 15 Plan 01: Server-side alert pipeline Summary
 
 Implemented server-side Gemini streaming utility, prompt builder, and SSE route handler for zone density alerts.
+
+- [Phase 15]: ---
+
+phase: 15-ai-alert-stream
+plan: 02
+subsystem: client
+tags: [ai, sse, zustand, react, ui]
+requires: [15-01]
+provides: [AlertFeed component, useAlertStream hook, AlertSlice FIFO]
+affects: [src/stores/slices/alertSlice.ts]
+tech-stack.added: [IntersectionObserver]
+patterns: [Client-side SSE stream parsing, UI auto-scroll, Notification chip]
+key-files.created:
+
+  - src/hooks/useAlertStream.ts
+  - tests/hooks/useAlertStream.test.ts
+  - src/components/dashboard/AlertFeed.tsx
+  - tests/components/dashboard/AlertFeed.test.tsx
+  - tests/stores/alertSlice.test.ts
+
+key-files.modified:
+
+  - src/stores/slices/alertSlice.ts
+
+key-decisions:
+
+  - "Implemented SSE reconnect with exponential backoff capping at 8s"
+  - "Used IntersectionObserver for auto-scroll logic rather than custom scroll events"
+
+requirements-completed: [AIAL-02]
+duration: 5 min
+completed: 2026-07-14T19:07:00Z
+coverage:
+
+  - kind: feature
+    ref: tests/stores/alertSlice.test.ts
+    status: pass
+    human_judgment: false
+
+  - kind: feature
+    ref: tests/hooks/useAlertStream.test.ts
+    status: pass
+    human_judgment: false
+
+  - kind: feature
+    ref: tests/components/dashboard/AlertFeed.test.tsx
+    status: pass
+    human_judgment: false
+---
+
+# Phase 15 Plan 02: Client-side alert infrastructure Summary
+
+Implemented the client-side infrastructure to consume, store, and display real-time AI alerts via SSE.
+
+## Accomplishments
+
+- Added FIFO 50 cap to `alertSlice` to prevent unbounded memory growth
+- Built `useAlertStream` hook to connect to `/api/alert`, parse SSE, dispatch to store, and handle exponential backoff reconnection
+- Created `AlertFeed` component to render severity-coded alerts with auto-scroll and a "New alerts below" chip
+
+## Deviations from Plan
+
+- In `tests/hooks/useAlertStream.test.ts`, had to use `function() { return mockEventSource; }` instead of an arrow function so the mock could be instantiated with `new EventSource`.
+- In `tests/components/dashboard/AlertFeed.test.tsx`, mocked `IntersectionObserver` using a class to allow `new IntersectionObserver()` in the component.
+
+## Self-Check: PASSED
 
 ## Accomplishments
 

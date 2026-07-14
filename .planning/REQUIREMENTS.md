@@ -18,7 +18,7 @@ All v1 requirements validated and complete. See `.planning/PROJECT.md` for full 
 ### AI Alert Stream
 
 - [x] **AIAL-01**: Claude analyzes zone density data every 45s and streams ops alerts via SSE
-- [ ] **AIAL-02**: Alerts classified by severity (nominal, warning, critical) with visual treatment in live feed
+- [x] **AIAL-02**: Alerts classified by severity (nominal, warning, critical) with visual treatment in live feed
 
 ### Fan Chatbot
 
@@ -73,7 +73,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | LIVE-02 | Phase 18 | Pending |
 | LIVE-03 | Phase 14 | Pending |
 | AIAL-01 | Phase 15 | Complete |
-| AIAL-02 | Phase 15 | Pending |
+| AIAL-02 | Phase 15 | Complete |
 | FAN-01 | Phase 16 | Pending |
 | FAN-02 | Phase 16 | Pending |
 | WTHR-01 | Phase 17 | Pending |

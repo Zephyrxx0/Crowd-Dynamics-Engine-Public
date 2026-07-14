@@ -83,7 +83,7 @@ Plans:
 Plans:
 
 - [x] 15-01-PLAN.md — Server-Side Alert Pipeline (Gemini utility, prompt builder, SSE route handler)
-- [ ] 15-02-PLAN.md — Client-Side Alert Infrastructure (alertSlice FIFO, useAlertStream hook, AlertFeed component)
+- [x] 15-02-PLAN.md — Client-Side Alert Infrastructure (alertSlice FIFO, useAlertStream hook, AlertFeed component)
 - [ ] 15-03-PLAN.md — Dashboard Integration + Eval Setup (wire into dashboard, promptfoo config, env vars)
 
 **UI hint**: yes
@@ -271,7 +271,7 @@ v2.0 phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 | 12. Webpage Design Rehaul | v1.0 | 3/3 | Complete | 2026-04-20 |
 | 13. Foundation & Architecture Decision | v2.0 | 3/3 | Complete   | 2026-07-13 |
 | 14. Server Runtime + Match Polling | v2.0 | 4/4 | Complete   | 2026-07-14 |
-| 15. AI Alert Stream | v2.0 | 1/3 | In Progress|  |
+| 15. AI Alert Stream | v2.0 | 2/3 | In Progress|  |
 | 16. Fan Chatbot | v2.0 | 0/0 | Not started | - |
 | 17. Weather Integration | v2.0 | 0/0 | Not started | - |
 | 18. Demo Mode + Integration Wiring | v2.0 | 0/0 | Not started | - |
