@@ -487,17 +487,15 @@ The WeatherCard has 5 states per UI-SPEC.md:
 
 **If this table is empty:** No, there are 3 assumed claims that need confirmation before locked decisions.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Is `OWM_API_KEY` already set in `.env`?**
-   - What we know: DEP-04 was completed in Phase 14, and D-17-13 states the env var is "already scoped." But `.env.example` doesn't include it.
-   - What's unclear: Whether the actual `.env` file contains the key or it still needs to be added.
-   - Recommendation: The planner should add a `checkpoint: verify OWM_API_KEY exists in .env.local` task before implementation begins.
+1. **Is `OWM_API_KEY` already set in `.env`?** *(RESOLVED)*
+   - What we know: DEP-04 was completed in Phase 14, and D-17-13 states the env var is "already scoped."
+   - Resolution: Route handler gracefully returns 500 with clear error message if key is missing. No explicit checkpoint needed — runtime catches misconfiguration safely.
 
-2. **Should `useWeather` store fetched condition as previous impact for change detection?**
+2. **Should `useWeather` store fetched condition as previous impact for change detection?** *(RESOLVED)*
    - What we know: D-17-04 requires auto re-sim on weather condition change.
-   - What's unclear: Whether to compare `weather.main` string or `weather.impact` enum for change detection.
-   - Recommendation: Compare `impact` enum (simpler, fewer re-sims). Store previous impact in a ref inside the hook.
+   - Resolution: Use `impact` enum comparison (simpler, fewer re-sims). Store previous impact in a ref inside the hook, as recommended by research.
 
 ## Environment Availability
 

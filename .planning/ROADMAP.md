@@ -118,6 +118,7 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 
 - [x] 16-04-PLAN.md — UI: ChatMessage, ChatInterface, fan layout + page
+
 >>>>>>> Stashed changes
 
 ### Phase 17: Weather Integration
@@ -131,11 +132,16 @@ Plans:
   2. Zone densities adjust based on weather factors (rain accelerates egress, heat reduces capacity) as an overlay on planned density
    3. Weather data refreshes automatically at appropriate intervals (10min) without manual reload
 
-**Plans**: 3 plans
-Plans:
-- [ ] 17-01-PLAN.md — OWM API proxy, weather mapping utility, test suite
-- [ ] 17-02-PLAN.md — useWeather hook (10-min polling, impact change detection), weatherSlice extension
-- [ ] 17-03-PLAN.md — WeatherCard component (5 states), dashboard layout integration, impact-triggered re-sim
+**Plans**: 3 plansPlans:
+**Wave 1**
+
+- [x] 17-01-PLAN.md — OWM API proxy, weather mapping utility, test suite
+- [x] 17-02-PLAN.md — useWeather hook (10-min polling, impact change detection), weatherSlice extension
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] 17-03-PLAN.md — WeatherCard component (5 states), dashboard layout integration, impact-triggered re-sim
+
 **UI hint**: yes
 
 ### Phase 18: Demo Mode + Integration Wiring
@@ -297,5 +303,5 @@ v2.0 phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 =======
 | 16. Fan Chatbot | v2.0 | 4/4 | Complete   | 2026-07-15 |
 >>>>>>> Stashed changes
-| 17. Weather Integration | v2.0 | 0/3 | Planning   | - |
+| 17. Weather Integration | v2.0 | 3/3 | Complete   | 2026-07-15 |
 | 18. Demo Mode + Integration Wiring | v2.0 | 0/0 | Not started | - |
