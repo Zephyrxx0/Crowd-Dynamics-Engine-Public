@@ -8,6 +8,10 @@ import { applyWeatherAdjustment } from "@/lib/api/weather";
 import { presets } from "@/simulation/presets";
 import type { WeatherImpact } from "@/stores/slices/weatherSlice";
 import type { WeatherData } from "@/types/weather";
+import { useDemoSequence } from "@/hooks/useDemoSequence";
+import { usePhaseTransitionWatcher } from "@/hooks/usePhaseTransitionWatcher";
+import { useAlertStream } from "@/hooks/useAlertStream";
+import { AlertFeed } from "@/components/dashboard/AlertFeed";
 
 export default function DashboardPage() {
   const initializeSim = useLiveStore((s) => s.initializeSim);
@@ -15,6 +19,7 @@ export default function DashboardPage() {
   const setMatch = useLiveStore((s) => s.setMatch);
   const setWeather = useLiveStore((s) => s.setWeather);
   const setLastFetchTime = useLiveStore((s) => s.setLastFetchTime);
+  const isDemo = useLiveStore((s) => s.isDemo);
 
   const fetchMatch = useCallback(async () => {
     const res = await fetch("/api/match");
@@ -42,8 +47,11 @@ export default function DashboardPage() {
     [initializeSim]
   );
 
-  useMatchPoller(fetchMatch);
+  useMatchPoller(fetchMatch, !isDemo);
   useWeather(fetchWeather, { onImpactChange });
+  const { currentEvent: demoEvent } = useDemoSequence(isDemo);
+  const { isDisconnected } = useAlertStream();
+  usePhaseTransitionWatcher(demoEvent);
 
   useEffect(() => {
     if (!initialized) {
@@ -52,9 +60,8 @@ export default function DashboardPage() {
   }, [initialized, initializeSim]);
 
   return (
-    <main>
-      {/* Dashboard content area — Phase 15+ components render here */}
-    </main>
+    <div className="space-y-4 p-4 md:p-6 max-w-5xl mx-auto">
+      <AlertFeed isDisconnected={isDisconnected} />
+    </div>
   );
 }
-
