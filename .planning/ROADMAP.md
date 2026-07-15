@@ -99,10 +99,15 @@ Plans:
   2. Fan can ask stadium navigation questions and receive contextually grounded answers that reflect live zone density and match state
   3. Chatbot responses stream in as they're generated (SSE) with buffered rendering
   4. Conversation history is maintained within session (capped at 10 messages)
-  5. Quick question chips are available for one-tap demo queries
+   5. Quick question chips are available for one-tap demo queries
 
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 4 plans
+Plans:
+
+- [ ] 16-01-PLAN.md — Foundation: types, store (FIFO-10), prompt builder
+- [ ] 16-02-PLAN.md — Server: POST /api/chat SSE route handler
+- [ ] 16-03-PLAN.md — Client: useChatStream hook + input components
+- [ ] 16-04-PLAN.md — UI: ChatMessage, ChatInterface, fan layout + page
 
 ### Phase 17: Weather Integration
 
@@ -272,6 +277,6 @@ v2.0 phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 | 13. Foundation & Architecture Decision | v2.0 | 3/3 | Complete   | 2026-07-13 |
 | 14. Server Runtime + Match Polling | v2.0 | 4/4 | Complete   | 2026-07-14 |
 | 15. AI Alert Stream | v2.0 | 2/3 | In Progress|  |
-| 16. Fan Chatbot | v2.0 | 0/0 | Not started | - |
+| 16. Fan Chatbot | v2.0 | 0/4 | Planning | - |
 | 17. Weather Integration | v2.0 | 0/0 | Not started | - |
 | 18. Demo Mode + Integration Wiring | v2.0 | 0/0 | Not started | - |
