@@ -1,6 +1,9 @@
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react"
 import { animate } from "animejs"
-import { CloudUpload, FileText, GitCompareArrows, Home, SlidersHorizontal } from "lucide-react"
+import { CloudUpload, FileText, GitCompareArrows, Home, LayoutDashboard, MessageSquare, SlidersHorizontal } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 
@@ -17,6 +20,7 @@ const MAX_SCALE = 0.22
 export function MagneticDock({ activeTab, onTabChange }: { activeTab: string, onTabChange: (tab: string) => void }) {
   const refs = useRef<HTMLButtonElement[]>([])
   const [reducedMotion, setReducedMotion] = useState(false)
+  const router = useRouter()
 
   const items = useMemo<DockItem[]>(
     () => [
@@ -25,6 +29,8 @@ export function MagneticDock({ activeTab, onTabChange }: { activeTab: string, on
       { label: "Compare", target: "compare", icon: GitCompareArrows },
       { label: "Report", target: "report", icon: FileText },
       { label: "Deploy", target: "deploy", icon: CloudUpload },
+      { label: "Dashboard", target: "dashboard", icon: LayoutDashboard },
+      { label: "Fan Chat", target: "fan", icon: MessageSquare },
     ],
     []
   )
@@ -113,7 +119,13 @@ export function MagneticDock({ activeTab, onTabChange }: { activeTab: string, on
                     ? "border-primary/50 bg-primary/20 text-primary shadow-[0_0_15px_rgba(236,78,2,0.2)]"
                     : "border-transparent bg-transparent text-foreground/70 hover:border-border hover:bg-card hover:text-foreground focus-visible:border-primary/60 focus-visible:ring-1 focus-visible:ring-primary/60"
                 )}
-                onClick={() => onTabChange(item.target)}
+                onClick={() => {
+                  if (item.target === "dashboard" || item.target === "fan") {
+                    router.push(`/${item.target}`);
+                  } else {
+                    onTabChange(item.target);
+                  }
+                }}
                 aria-label={item.label}
                 title={item.label}
               >
