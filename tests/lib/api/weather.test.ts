@@ -77,7 +77,7 @@ describe("mapOwmResponse", () => {
 // ─── applyWeatherAdjustment ───────────────────────────────────────────────────
 
 const makeBase = (): SimulationInput => ({
-  schemaVersion: "2.1",
+  schemaVersion: "1.0.0",
   mode: "zone",
   phases: [{ id: "arrive", order: 1, durationMin: 60 }],
   zones: [
