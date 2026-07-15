@@ -157,7 +157,11 @@ Plans:
   4. Demo/live toggle works with complete state reset and visual "DEMO MODE" indicator
   5. All components accessible through MagneticDock navigation tabs
 
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 18-01-PLAN.md — Demo Mode Content: types, API route, phase transition deltas, demo sequence hook, demo UI components + tests
+- [ ] 18-02-PLAN.md — Integration Wiring: phase transition watcher, dashboard page/layout orchestration, MagneticDock navigation tabs
+
 **UI hint**: yes
 
 ---
