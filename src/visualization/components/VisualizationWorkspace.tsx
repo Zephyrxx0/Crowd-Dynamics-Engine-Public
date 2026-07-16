@@ -51,25 +51,30 @@ export function VisualizationWorkspace({ activeTab }: { activeTab?: string }) {
             <p className="text-sm text-muted-foreground">Compare zone risk progression and current heat concentration.</p>
           </WorkspaceKinoProgress>
 
-          <Separator className="bg-border" />
+          <Separator className="bg-white/10" />
 
-          {/* Complex 3D Stadium Visualization */}
-          <div className="w-full h-[500px] border border-border bg-card relative">
-             <div className="absolute top-2 left-2 z-10 px-3 py-1 bg-black/80 border border-primary/40 text-xs font-mono text-primary shadow-[0_0_10px_rgba(236,78,2,0.3)]">
-               LIVE 3D RENDER
-             </div>
-             <ThreeStadium />
-          </div>
-
-          <ChartRevealShell label="Risk progression over time" className="rounded-none border border-border bg-card p-4 shadow-xl">
-            <RiskLineChart output={latestSimulationOutput} />
-          </ChartRevealShell>
-
-          <div className="grid gap-4 xl:grid-cols-[2fr_1fr]">
-            <div className="rounded-none border border-border bg-card p-4 shadow-xl">
-              <StadiumHeatmap latestZoneRisk={model.latestZoneRisk} />
+          <div className="flex flex-col gap-6 w-full">
+            <div className="w-full h-[600px] border border-border bg-card relative overflow-hidden shadow-sm">
+               <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-black/80 backdrop-blur-md rounded-md border border-primary/40 text-xs font-mono text-primary shadow-[0_0_15px_rgba(236,78,2,0.4)]">
+                 LIVE 3D RENDER
+               </div>
+               <ThreeStadium />
             </div>
-            <RiskLegend />
+
+            <div className="grid lg:grid-cols-2 gap-6 w-full">
+              <ChartRevealShell label="Risk progression over time" className="border border-border bg-card p-4 shadow-sm h-[400px]">
+                <RiskLineChart output={latestSimulationOutput} />
+              </ChartRevealShell>
+
+              <div className="grid gap-4 xl:grid-cols-[2fr_1fr] h-[400px]">
+                <div className="border border-border bg-card p-4 shadow-sm overflow-hidden relative">
+                  <StadiumHeatmap latestZoneRisk={model.latestZoneRisk} />
+                </div>
+                <div className="border border-border bg-card p-4 shadow-sm flex flex-col justify-center">
+                  <RiskLegend />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
