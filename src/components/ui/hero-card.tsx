@@ -1,60 +1,93 @@
 "use client"
 
-import { ArrowRight } from "lucide-react"
-import { useState, Suspense, lazy } from "react"
-
-const Dithering = lazy(() =>
-  import("@paper-design/shaders-react").then((mod) => ({ default: mod.Dithering })),
-)
+import { ArrowRight, Waves } from "lucide-react"
+import { useState } from "react"
+import { Separator } from "@/components/ui/separator"
+import { cn } from "@/lib/utils"
 
 export function CTASection() {
-  const [isHovered, setIsHovered] = useState(false)
+  const [_hovered, setIsHovered] = useState(false)
 
   return (
-    <section className="py-12 w-full flex justify-center items-center px-4 md:px-6">
+    <section className="py-8 w-full flex justify-center items-center px-4 md:px-6">
       <div
         className="w-full max-w-7xl relative"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="relative overflow-hidden rounded-[48px] border border-border bg-card shadow-sm min-h-[600px] md:min-h-[600px] flex flex-col items-center justify-center duration-500">
-          <Suspense fallback={<div className="absolute inset-0 bg-muted/20" />}>
-            <div className="absolute inset-0 z-0 pointer-events-none opacity-40 dark:opacity-30 mix-blend-multiply dark:mix-blend-screen">
-              <Dithering
-                colorBack="#00000000"
-                colorFront="#EC4E02"
-                shape="warp"
-                type="4x4"
-                speed={isHovered ? 0.6 : 0.2}
-                className="size-full"
-                minPixelRatio={1}
-              />
+        {/* Dot grid container */}
+        <div className="relative overflow-hidden border border-border bg-card min-h-[560px] md:min-h-[600px] flex flex-col">
+          {/* Dot grid background */}
+          <div
+            className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.1]"
+            style={{
+              backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)",
+              backgroundSize: "20px 20px",
+            }}
+          />
+
+          {/* Vertical side tag */}
+          <div className="absolute top-1/2 right-0 z-10 flex h-28 -translate-y-1/2 items-center pointer-events-none">
+            <div className="bg-foreground text-background px-2 py-4 text-[10px] font-bold tracking-widest uppercase">
+              <span className="rotate-180 [writing-mode:vertical-rl]">Fan Flow 2026</span>
             </div>
-          </Suspense>
+          </div>
 
-          <div className="relative z-10 px-6 max-w-4xl mx-auto text-center flex flex-col items-center">
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/10 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-              </span>
-              AI-Powered Writing
+          {/* Content */}
+          <div className="relative z-10 flex flex-col justify-between h-full flex-1 p-8 md:p-14 lg:p-16">
+            {/* Main heading */}
+            <div className="flex flex-col gap-0">
+              <h2
+                className="text-[clamp(3rem,10vw,7rem)] leading-[0.9] font-light tracking-wider uppercase text-foreground"
+                style={{ textWrap: "balance" }}
+              >
+                Predictive
+              </h2>
+              <h2 className="text-[clamp(3rem,10vw,7rem)] leading-[0.9] font-light tracking-wider uppercase text-primary">
+                Fan Flow
+              </h2>
+              <h2 className="text-[clamp(3rem,10vw,7rem)] leading-[0.9] font-light tracking-wider uppercase text-foreground/40">
+                Simulator
+              </h2>
             </div>
 
-            <h2 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight text-foreground mb-8 leading-[1.05]">
-              Your words, <br />
-              <span className="text-foreground/80">delivered perfectly.</span>
-            </h2>
+            {/* Bottom row */}
+            <div className="mt-10 md:mt-16">
+              <Separator className="mb-8" />
+              <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+                  Scenario-driven crowd risk simulation and planning — built for World Cup 2026 venue teams.
+                </p>
 
-            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-12 leading-relaxed">
-              Join 2,847 founders using the only AI that understands the nuance of your voice.
-              Clean, precise, and uniquely yours.
-            </p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <a
+                    href="/"
+                    id="cta-enter-dashboard"
+                    className={cn(
+                      "group flex h-11 items-center gap-3 border border-foreground bg-foreground",
+                      "px-8 text-sm font-semibold uppercase tracking-wider text-background",
+                      "transition-all duration-200 hover:bg-primary hover:border-primary"
+                    )}
+                  >
+                    <span>View Dashboard</span>
+                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  </a>
 
-            <button className="group relative inline-flex h-14 items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-12 text-base font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 active:scale-95 hover:ring-4 hover:ring-primary/20">
-              <span className="relative z-10">Start Typing</span>
-              <ArrowRight className="h-5 w-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
-            </button>
+                  <a
+                    href="/dashboard"
+                    id="cta-live-data"
+                    className={cn(
+                      "group flex h-11 items-center gap-3 border border-border bg-transparent",
+                      "px-8 text-sm font-semibold uppercase tracking-wider text-foreground",
+                      "transition-colors duration-200 hover:border-primary hover:text-primary"
+                    )}
+                  >
+                    <Waves className="h-4 w-4 text-primary shrink-0" />
+                    <span>Live Match Data</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

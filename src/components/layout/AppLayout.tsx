@@ -10,11 +10,11 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen w-full pb-24 dark bg-background text-foreground" data-testid="app-layout">
-      <MagneticDock activeTab={activeTab} onTabChange={setActiveTab} />
+      <MagneticDock />
 
       {activeTab === "overview" && (
         <div className="w-full">
-          <CinematicHero onNavigate={(tab) => setActiveTab(tab)} />
+          <CinematicHero />
         </div>
       )}
 

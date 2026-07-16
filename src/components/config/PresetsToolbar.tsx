@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button"
 import { useScenarioStore } from "@/hooks/useScenarioStore"
 
@@ -17,6 +19,7 @@ export function PresetsToolbar() {
           key={preset.key}
           variant="outline"
           size="sm"
+          className="bg-black/40 border-white/10 hover:bg-primary/20 hover:text-primary hover:border-primary/50 text-xs font-semibold tracking-wider transition-all"
           onClick={() => applyPreset(preset.key)}
           data-testid={`preset-${preset.key}`}
         >
