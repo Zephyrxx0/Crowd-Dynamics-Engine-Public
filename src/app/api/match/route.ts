@@ -6,20 +6,11 @@ import {
   findLiveMatch,
 } from "@/lib/api/worldcup26";
 
+// worldcup26.ir is a free public API — no token required for read access.
+// See: https://worldcup26.ir ("No API key required for read access")
 export async function GET(_request: NextRequest) {
-  const token = process.env.WORLDCUP26_TOKEN;
-  if (!token) {
-    return Response.json(
-      { error: "WORLDCUP26_TOKEN not configured", status: "error" },
-      { status: 500 }
-    );
-  }
-
   try {
     const response = await fetch("https://worldcup26.ir/get/games", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       signal: AbortSignal.timeout(10_000),
     });
 
@@ -49,8 +40,8 @@ export async function GET(_request: NextRequest) {
     const match = liveMatchGame ? mapGameToMatchState(liveMatchGame) : null;
 
     const allGames = games.map((game) => ({
-      homeTeam: game.home_team_name_en,
-      awayTeam: game.away_team_name_en,
+      homeTeam: game.home_team_name_en ?? game.home_team_label ?? "TBD",
+      awayTeam: game.away_team_name_en ?? game.away_team_label ?? "TBD",
       localDate: game.local_date,
       timeElapsed: game.time_elapsed,
       finished: game.finished,

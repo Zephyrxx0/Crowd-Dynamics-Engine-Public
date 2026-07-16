@@ -17,7 +17,7 @@ function getZoneData() {
   return Array.from(
     output.phaseZoneMatrix
       .reduce((acc, row) => {
-        if (!acc.has(row.zoneId) || row.occupancyFans > acc.get(row.zoneId)!.occupancyFans) {
+        if (!acc.has(row.zoneId) || row.occupancyFans > acc.get(row.zoneId)!.occupancy) {
           acc.set(row.zoneId, {
             id: row.zoneId,
             name: row.zoneId,

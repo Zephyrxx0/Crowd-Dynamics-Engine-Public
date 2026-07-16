@@ -15,7 +15,7 @@ function getZoneData() {
   
   return Array.from(
     output.phaseZoneMatrix.reduce((acc, row) => {
-      if (!acc.has(row.zoneId) || row.occupancyFans > acc.get(row.zoneId)!.occupancyFans) {
+      if (!acc.has(row.zoneId) || row.occupancyFans > acc.get(row.zoneId)!.occupancy) {
         acc.set(row.zoneId, {
           id: row.zoneId,
           name: row.zoneId,
@@ -34,7 +34,7 @@ function extractMatchState(searchParams: URLSearchParams): MatchState {
   const minuteParam = searchParams.get("minute");
   return {
     minute: minuteParam ? parseInt(minuteParam, 10) : null,
-    phase: searchParams.get("phase") ?? "first-half",
+    phase: (searchParams.get("phase") as MatchState["phase"]) ?? "first-half",
     score: searchParams.get("score") ?? "0-0",
     homeTeam: searchParams.get("homeTeam") ?? "Home",
     awayTeam: searchParams.get("awayTeam") ?? "Away",
