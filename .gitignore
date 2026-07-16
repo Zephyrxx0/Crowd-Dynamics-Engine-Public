@@ -105,6 +105,7 @@ prompt-wars.code-workspace
 docs/local-setup-run-test-gcp.md
 .vscode/mcp.json
 .next
+next-env.d.ts
 .planning/
 # Vite cache
 .vite/
