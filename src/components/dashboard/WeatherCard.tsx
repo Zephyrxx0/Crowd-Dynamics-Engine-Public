@@ -125,8 +125,8 @@ export function WeatherCard({ error, isLoading }: WeatherCardProps) {
   return (
     <Card
       className={cn(
-        "w-full max-w-5xl mx-auto relative overflow-hidden",
-        error ? "border-amber-500/50" : "ring-1 ring-primary/10"
+        "w-full max-w-5xl mx-auto relative overflow-hidden border border-border",
+        error ? "border-amber-500/30" : ""
       )}
     >
       {/* State 3: Error with prior data — amber warning bar */}

@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 
 const QUICK_QUESTIONS = [
   "Where's my gate?",
@@ -16,15 +15,14 @@ export function QuickChips({ onSelect }: QuickChipsProps) {
   return (
     <div className="flex flex-wrap justify-center gap-2">
       {QUICK_QUESTIONS.map((question) => (
-        <Button
+        <button
           key={question}
-          variant="outline"
-          size="sm"
+          type="button"
           onClick={() => onSelect(question)}
-          className="rounded-full text-[13px] font-semibold"
+          className="border border-border bg-transparent px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:border-primary hover:text-primary"
         >
           {question}
-        </Button>
+        </button>
       ))}
     </div>
   );

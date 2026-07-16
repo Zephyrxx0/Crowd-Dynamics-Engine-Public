@@ -14,16 +14,16 @@ export function ChatMessage({ message, isStreaming = false }: ChatMessageProps) 
     <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "max-w-[80%] rounded-2xl px-4 py-3",
+          "max-w-[80%] px-4 py-3",
           isUser
             ? "bg-primary text-primary-foreground"
-            : "bg-muted text-foreground"
+            : "border border-border bg-card text-foreground"
         )}
       >
         <p className="text-sm whitespace-pre-wrap leading-relaxed">
           {message.content}
           {isStreaming && (
-            <span className="ml-1 inline-block h-4 w-2 animate-pulse rounded-sm bg-current opacity-70" />
+            <span className="ml-1 inline-block h-[14px] w-[2px] animate-pulse bg-current opacity-60 align-middle" />
           )}
         </p>
       </div>

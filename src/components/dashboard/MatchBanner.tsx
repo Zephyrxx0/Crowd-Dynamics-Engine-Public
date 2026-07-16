@@ -78,8 +78,8 @@ export function MatchBanner({ error, isLoading, upcomingMatch }: MatchBannerProp
   // Live match or Error with data
   return (
     <Card className={cn(
-      "w-full max-w-5xl mx-auto relative overflow-hidden",
-      error ? "border-amber-500/50" : "ring-1 ring-primary/10"
+      "w-full max-w-5xl mx-auto relative overflow-hidden border border-border",
+      error ? "border-amber-500/30" : ""
     )}>
       {error && (
         <div className="w-full bg-amber-500/10 px-4 py-2 flex items-center justify-center gap-2 border-b border-amber-500/20">
@@ -88,26 +88,26 @@ export function MatchBanner({ error, isLoading, upcomingMatch }: MatchBannerProp
         </div>
       )}
       <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-2 px-4 py-4 md:px-6 md:py-5 lg:px-8 lg:py-6">
-        <div className="text-2xl font-semibold">{match.homeTeam}</div>
+        <div className="text-xl font-semibold tracking-tight">{match.homeTeam}</div>
         
         <div className="flex flex-col items-center gap-2">
-          <div className="text-5xl font-bold">{match.score}</div>
+          <div className="text-5xl font-bold tabular-nums">{match.score}</div>
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium">
+            <span className="text-sm font-medium text-muted-foreground">
               {match.minute !== null ? `${match.minute}'` : ""}
             </span>
-            <span className="text-sm text-muted-foreground">{match.phase}</span>
-            <Badge variant="default" className="flex items-center gap-1.5 pl-1.5">
+            <span className="text-xs uppercase tracking-widest text-muted-foreground">{match.phase}</span>
+            <Badge variant="default" className="flex items-center gap-1.5 pl-1.5 bg-primary text-primary-foreground">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-background opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-background"></span>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-foreground opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary-foreground"></span>
               </span>
               LIVE
             </Badge>
           </div>
         </div>
 
-        <div className="text-2xl font-semibold">{match.awayTeam}</div>
+        <div className="text-xl font-semibold tracking-tight">{match.awayTeam}</div>
       </CardContent>
     </Card>
   );
