@@ -17,6 +17,7 @@
     "deploy:cloudrun": "gcloud run deploy predictive-fan-flow --image us-central1-docker.pkg.dev/$PROJECT_ID/predictive-fan-flow/predictive-fan-flow:latest --platform managed --region us-central1 --allow-unauthenticated"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.2",
     "@tailwindcss/vite": "^4.2.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
