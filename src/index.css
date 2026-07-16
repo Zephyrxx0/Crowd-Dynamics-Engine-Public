@@ -26,12 +26,6 @@ body {
   }
 }
 
-/* Dot grid background — hero-03 design language */
-.dot-grid {
-  background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-
 .hero-card {
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
