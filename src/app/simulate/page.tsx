@@ -6,11 +6,10 @@ export default function SimulatePage() {
   return (
     <main className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-8 pb-24">
       <div className="flex flex-col xl:flex-row gap-6 items-start">
-        <section id="simulate" className="flex-1 w-full max-w-sm rounded-xl border border-white/10 bg-black/60 backdrop-blur-xl p-6 shadow-2xl relative overflow-hidden" data-route-surface="simulate">
-          <div className="absolute inset-0 z-[-1] opacity-30 dot-grid pointer-events-none" />
-          <div className="mb-6 border-b border-white/10 pb-6">
+        <section id="simulate" className="flex-1 w-full max-w-sm rounded-lg border border-border bg-card p-6 shadow-xl" data-route-surface="simulate">
+          <div className="mb-6 border-b border-border pb-6">
             <h2 className="text-xl font-bold tracking-widest text-primary uppercase">Scenario Config</h2>
-            <p className="text-sm text-foreground/60 mt-2 mb-5">
+            <p className="text-sm text-muted-foreground mt-2 mb-5">
               Configure and run scenarios to drive visualization.
             </p>
             <PresetsToolbar />

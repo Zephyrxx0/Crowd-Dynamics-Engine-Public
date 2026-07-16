@@ -11,7 +11,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-screen flex-col">
       {/* Premium dark header with dot grid */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
-        <div className="absolute inset-0 z-[-1] opacity-[0.06] dark:opacity-[0.1] dot-grid pointer-events-none" />
         <div className="flex h-14 items-center gap-4 px-4 sm:px-6 relative">
           <Menu className="h-5 w-5 text-muted-foreground" />
           <h1 className="text-sm font-semibold uppercase tracking-widest text-foreground">Command Center</h1>
