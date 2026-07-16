@@ -17,62 +17,70 @@ export function usePhaseTransitionWatcher(currentDemoEvent?: DemoEvent | null) {
 
   useEffect(() => {
     const unsubPhase = liveStore.subscribe(
-      (state) => state.match?.phase ?? null,
-      (phase) => {
-        if (!previousPhaseRef.current) {
-          previousPhaseRef.current = phase;
-          return;
-        }
-
-        if (phase && previousPhaseRef.current && phase !== previousPhaseRef.current) {
-          if (currentDemoEventRef.current?.zoneDeltas) {
+      (state, prevState) => {
+        const phase = state.match?.phase ?? null;
+        const prevPhase = prevState.match?.phase ?? null;
+        
+        if (phase !== prevPhase) {
+          if (!previousPhaseRef.current) {
             previousPhaseRef.current = phase;
             return;
           }
 
-          let eventType: string;
-          if (phase === "half-time") eventType = "halftime";
-          else if (phase === "full-time") eventType = "full-time";
-          else if (previousPhaseRef.current === "first-half" && phase === "second-half") eventType = "second-half-start";
-          else {
+          if (phase && previousPhaseRef.current && phase !== previousPhaseRef.current) {
+            if (currentDemoEventRef.current?.zoneDeltas) {
+              previousPhaseRef.current = phase;
+              return;
+            }
+
+            let eventType: string;
+            if (phase === "half-time") eventType = "halftime";
+            else if (phase === "full-time") eventType = "full-time";
+            else if (previousPhaseRef.current === "first-half" && phase === "second-half") eventType = "second-half-start";
+            else {
+              previousPhaseRef.current = phase;
+              return;
+            }
+
+            const currentState = liveStore.getState();
+            const baseInput = currentState.v1ZoneData ?? presets.normal;
+            const adjusted = applyPhaseTransitionDeltas(baseInput, eventType);
+            currentState.initializeSim(adjusted);
+
             previousPhaseRef.current = phase;
-            return;
           }
-
-          const state = liveStore.getState();
-          const baseInput = state.v1ZoneData ?? presets.normal;
-          const adjusted = applyPhaseTransitionDeltas(baseInput, eventType);
-          state.initializeSim(adjusted);
-
-          previousPhaseRef.current = phase;
         }
       }
     );
 
     const unsubScore = liveStore.subscribe(
-      (state) => state.match?.score ?? null,
-      (score) => {
-        if (!previousScoreRef.current) {
-          previousScoreRef.current = score;
-          return;
-        }
-
-        if (score && previousScoreRef.current && score !== previousScoreRef.current) {
-          if (currentDemoEventRef.current?.zoneDeltas) {
+      (state, prevState) => {
+        const score = state.match?.score ?? null;
+        const prevScore = prevState.match?.score ?? null;
+        
+        if (score !== prevScore) {
+          if (!previousScoreRef.current) {
             previousScoreRef.current = score;
             return;
           }
 
-          const state = liveStore.getState();
-          const baseInput = state.v1ZoneData ?? presets.normal;
-          const adjusted = applyPhaseTransitionDeltas(baseInput, "goal", [
-            { zoneId: "north", deltaPercent: 20 },
-            { zoneId: "south", deltaPercent: 20 },
-            { zoneId: "east", deltaPercent: 20 },
-          ]);
-          state.initializeSim(adjusted);
+          if (score && previousScoreRef.current && score !== previousScoreRef.current) {
+            if (currentDemoEventRef.current?.zoneDeltas) {
+              previousScoreRef.current = score;
+              return;
+            }
 
-          previousScoreRef.current = score;
+            const currentState = liveStore.getState();
+            const baseInput = currentState.v1ZoneData ?? presets.normal;
+            const adjusted = applyPhaseTransitionDeltas(baseInput, "goal", [
+              { zoneId: "north", deltaPercent: 20 },
+              { zoneId: "south", deltaPercent: 20 },
+              { zoneId: "east", deltaPercent: 20 },
+            ]);
+            currentState.initializeSim(adjusted);
+
+            previousScoreRef.current = score;
+          }
         }
       }
     );

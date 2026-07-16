@@ -17,10 +17,14 @@ export const WorldCup26GameSchema = z.object({
   finished: z.enum(["TRUE", "FALSE"]),
   time_elapsed: z.string(),
   type: z.string(),
-  home_team_name_en: z.string(),
-  home_team_name_fa: z.string(),
-  away_team_name_en: z.string(),
-  away_team_name_fa: z.string(),
+  // Present for group-stage matches; absent for knockout matches until teams qualify
+  home_team_name_en: z.string().optional(),
+  home_team_name_fa: z.string().optional(),
+  away_team_name_en: z.string().optional(),
+  away_team_name_fa: z.string().optional(),
+  // Knockout placeholder labels e.g. "Winner Group A", "Runner-up Group B"
+  home_team_label: z.string().optional(),
+  away_team_label: z.string().optional(),
 });
 
 export const WorldCup26GamesSchema = z.object({
@@ -69,8 +73,8 @@ export function mapGameToMatchState(game: WorldCup26Game): LiveMatch {
     score: `${game.home_score} - ${game.away_score}`,
     phase,
     minute,
-    homeTeam: game.home_team_name_en,
-    awayTeam: game.away_team_name_en,
+    homeTeam: game.home_team_name_en ?? game.home_team_label ?? "TBD",
+    awayTeam: game.away_team_name_en ?? game.away_team_label ?? "TBD",
   };
 }
 
