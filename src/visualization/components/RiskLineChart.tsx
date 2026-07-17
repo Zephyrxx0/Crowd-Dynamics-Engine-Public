@@ -17,8 +17,8 @@ type RiskLineChartProps = {
 }
 
 const CHART_SIZE = {
-  width: 760,
-  height: 320,
+  width: 500,
+  height: 500,
   marginTop: 24,
   marginRight: 20,
   marginBottom: 48,
@@ -101,9 +101,9 @@ export function RiskLineChart({ output }: RiskLineChartProps) {
   }, [output, reducedMotion, showAllZones, topZoneIds, visibleZoneIds])
 
   return (
-    <section className="space-y-3" data-testid="risk-line-chart">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="text-base font-semibold text-slate-900">Zone Risk by Phase</h3>
+    <section className="flex flex-col h-full" data-testid="risk-line-chart">
+      <div className="flex items-center justify-between gap-3 shrink-0">
+        <h3 className="text-base font-semibold text-foreground">Zone Risk by Phase</h3>
         <TopZonesToggle
           showAllZones={showAllZones}
           onShowAllZonesChange={setShowAllZones}
@@ -113,11 +113,13 @@ export function RiskLineChart({ output }: RiskLineChartProps) {
       </div>
 
       <svg
-        width={CHART_SIZE.width}
-        height={CHART_SIZE.height}
+        width="100%"
+        height="100%"
         viewBox={`0 0 ${CHART_SIZE.width} ${CHART_SIZE.height}`}
+        preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Zone risk line chart"
+        className="flex-1 min-h-0"
         data-testid="risk-line-svg"
         data-transition-ms={VISUALIZATION_TRANSITION_MS}
         data-reduced-motion={String(reducedMotion)}

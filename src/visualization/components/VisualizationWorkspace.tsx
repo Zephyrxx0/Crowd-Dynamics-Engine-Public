@@ -4,6 +4,7 @@ import { useMemo } from "react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ComparisonPanel } from "@/comparison/components/ComparisonPanel"
 import { useScenarioStore } from "@/hooks/useScenarioStore"
 import { RiskReportPanel } from "@/reporting/components/RiskReportPanel"
@@ -12,8 +13,10 @@ import { ChartRevealShell } from "./ChartRevealShell"
 import { RiskLegend } from "./RiskLegend"
 import { RiskLineChart } from "./RiskLineChart"
 import { StadiumHeatmap } from "./StadiumHeatmap"
-import { WorkspaceKinoProgress } from "./WorkspaceKinoProgress"
+
 import ThreeStadium from "@/components/three-stadium"
+
+const VISUAL_SIZE = "aspect-square max-w-[600px] w-full"
 
 export function VisualizationWorkspace({ activeTab }: { activeTab?: string }) {
   const latestSimulationOutput = useScenarioStore((state) => state.latestSimulationOutput)
@@ -45,37 +48,53 @@ export function VisualizationWorkspace({ activeTab }: { activeTab?: string }) {
   return (
     <section data-testid="visualization-workspace" className="space-y-6">
       {activeTab === "simulate" && (
-        <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <WorkspaceKinoProgress>
-            <h2 className="text-xl font-bold uppercase tracking-tight text-primary">Live Telemetry</h2>
-            <p className="text-sm text-muted-foreground">Compare zone risk progression and current heat concentration.</p>
-          </WorkspaceKinoProgress>
-
-          <Separator className="bg-white/10" />
-
-          <div className="flex flex-col gap-6 w-full">
-            <div className="w-full h-[600px] border border-border bg-card relative overflow-hidden shadow-sm">
-               <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-black/80 backdrop-blur-md rounded-md border border-primary/40 text-xs font-mono text-primary shadow-[0_0_15px_rgba(236,78,2,0.4)]">
-                 LIVE 3D RENDER
-               </div>
-               <ThreeStadium />
+        <div className="flex flex-col h-full w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <Tabs defaultValue="render" className="w-full h-full flex flex-col flex-1">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+              <div className="flex flex-col">
+                <h2 className="text-xl font-bold uppercase tracking-tight text-primary">Live Telemetry</h2>
+                <p className="text-sm text-muted-foreground">Compare zone risk progression and current heat concentration.</p>
+              </div>
+              
+              <TabsList className="bg-muted w-full md:w-auto h-auto p-1 rounded-lg">
+                <TabsTrigger value="render" className="text-xs uppercase tracking-widest font-semibold data-active:bg-background flex-1">3D Render</TabsTrigger>
+                <TabsTrigger value="chart" className="text-xs uppercase tracking-widest font-semibold data-active:bg-background flex-1">Risk Chart</TabsTrigger>
+                <TabsTrigger value="heatmap" className="text-xs uppercase tracking-widest font-semibold data-active:bg-background flex-1">Heatmap</TabsTrigger>
+              </TabsList>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-6 w-full">
-              <ChartRevealShell label="Risk progression over time" className="border border-border bg-card p-4 shadow-sm h-[400px]">
+            <Separator className="bg-border mb-6" />
+
+            <TabsContent value="render" className={`mt-0 ${VISUAL_SIZE}`}>
+              <div className="w-full h-full border border-border bg-card relative overflow-hidden shadow-sm rounded-lg">
+                 <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-black/80 backdrop-blur-md rounded-md border border-primary/40 text-xs font-mono text-primary shadow-[0_0_15px_rgba(236,78,2,0.4)]">
+                   LIVE 3D RENDER
+                 </div>
+                 <div className="w-full h-full relative">
+                   <div className="absolute inset-0">
+                     <ThreeStadium />
+                   </div>
+                 </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="chart" className={`mt-0 ${VISUAL_SIZE}`}>
+              <ChartRevealShell label="Risk progression over time" className="w-full h-full border border-border bg-card p-4 shadow-sm rounded-lg">
                 <RiskLineChart output={latestSimulationOutput} />
               </ChartRevealShell>
+            </TabsContent>
 
-              <div className="grid gap-4 xl:grid-cols-[2fr_1fr] h-[400px]">
-                <div className="border border-border bg-card p-4 shadow-sm overflow-hidden relative">
+            <TabsContent value="heatmap" className={`mt-0 ${VISUAL_SIZE}`}>
+              <div className="grid gap-4 grid-cols-[2fr_1fr] w-full h-full">
+                <div className="border border-border bg-card p-4 shadow-sm overflow-hidden relative rounded-lg min-h-0">
                   <StadiumHeatmap latestZoneRisk={model.latestZoneRisk} />
                 </div>
-                <div className="border border-border bg-card p-4 shadow-sm flex flex-col justify-center">
+                <div className="border border-border bg-card p-4 shadow-sm flex flex-col justify-center rounded-lg min-h-0">
                   <RiskLegend />
                 </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
       )}
 
@@ -91,15 +110,7 @@ export function VisualizationWorkspace({ activeTab }: { activeTab?: string }) {
         </div>
       )}
 
-      {activeTab === "deploy" && (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 rounded-none border border-border bg-card p-8 text-sm text-muted-foreground shadow-xl">
-          <h2 className="text-xl font-bold tracking-tight text-white uppercase mb-4">Deployment Surface</h2>
-          <p>
-            This flow is deployment-ready for Cloud Run static hosting. Use the deployment runbook to publish the latest build while preserving
-            deterministic simulation behavior.
-          </p>
-        </div>
-      )}
+
     </section>
   )
 }
