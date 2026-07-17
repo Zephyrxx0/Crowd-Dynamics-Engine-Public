@@ -4,6 +4,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'FixelPont';
+  src: url('/fonts/fixelPont-regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FixelPont';
+  src: url('/fonts/fixelPont-rounded.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: oklch(0.99 0.008 260);
   --foreground: oklch(0.1 0.02 262);
@@ -97,7 +113,9 @@
 
 @theme inline {
   --font-sans: "Geist Variable", sans-serif;
-  --font-heading: var(--font-sans);
+  --font-fixel: "FixelPont", sans-serif;
+  --font-pixel: var(--font-geist-pixel), sans-serif;
+  --font-heading: var(--font-fixel);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -159,6 +177,20 @@ body {
     border-color: var(--border);
     outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
   }
+}
+
+@theme inline {
+  --animate-spin-slow-1: spin 8s linear infinite;
+}
+
+@keyframes text-dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.text-draw-animation {
+  animation: text-dash 3s ease-in-out infinite alternate;
 }
 
 .hero-card {

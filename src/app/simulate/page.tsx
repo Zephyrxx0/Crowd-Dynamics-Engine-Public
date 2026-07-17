@@ -4,7 +4,7 @@ import { PresetsToolbar } from "@/components/config/PresetsToolbar"
 
 export default function SimulatePage() {
   return (
-    <main className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-8 pb-24">
+    <main className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-8 pb-24 flex-1 min-h-[calc(100vh-4rem)]">
       <div className="flex flex-col xl:flex-row gap-6 items-start">
         <section id="simulate" className="flex-1 w-full max-w-sm rounded-lg border border-border bg-card p-6 shadow-xl" data-route-surface="simulate">
           <div className="mb-6 border-b border-border pb-6">
