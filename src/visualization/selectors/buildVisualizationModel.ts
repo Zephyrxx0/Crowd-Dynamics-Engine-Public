@@ -1,5 +1,5 @@
 import type { SimulationOutput } from "@/simulation/contracts/output.schema"
-import { riskBandFromRatio, type RiskBand } from "@/visualization/contracts/riskEncoding"
+import { type RiskBand } from "@/visualization/contracts/riskEncoding"
 
 export type ZoneSeriesPoint = {
   phaseId: string
@@ -55,7 +55,7 @@ export function buildVisualizationModel(output: SimulationOutput): Visualization
       }
     }
 
-    const riskBand = riskBandFromRatio(row.occupancyRatio)
+    const riskBand = row.occupancySeverity as RiskBand
     zoneSeries[row.zoneId].points.push({
       phaseId: row.phaseId,
       occupancyRatio: row.occupancyRatio,
