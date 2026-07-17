@@ -45,16 +45,15 @@ export function Footer() {
     // 2. Pause before exit
     tl.to({}, { duration: 3.5 })
 
-    // 3. Explosive scatter - letters burst outward with spin
+    // 3. Fall down - letters drop with gravity
     tl.to(".footer-letter", {
+      y: 300,
       opacity: 0,
-      scale: 0.2,
-      x: () => gsap.utils.random(-250, 250),
-      y: () => gsap.utils.random(-250, 250),
-      rotation: () => gsap.utils.random(-360, 360),
-      duration: 0.7,
-      stagger: 0.025,
-      ease: "power4.out",
+      scale: 0.4,
+      rotation: () => gsap.utils.random(-30, 30),
+      duration: 0.6,
+      stagger: 0.02,
+      ease: "power2.in",
     })
   }, { scope: containerRef })
 

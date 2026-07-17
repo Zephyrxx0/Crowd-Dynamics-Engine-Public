@@ -2,7 +2,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { useRiskReportStore } from "@/hooks/useRiskReportStore"
 import { ReportSections } from "./ReportSections"
-import { Sparkles } from "lucide-react"
+
 
 export function RiskReportPanel() {
   const status = useRiskReportStore((state) => state.status)
@@ -18,8 +18,10 @@ export function RiskReportPanel() {
           <p className="text-sm text-muted-foreground mt-2">Structured AI report with deterministic fallback resilience.</p>
         </div>
         {report?.source === "ai" && (
-          <div className="group relative flex items-center justify-center p-2 text-amber-400 cursor-help" title="AI Review">
-            <Sparkles className="w-6 h-6" />
+          <div className="group relative flex items-center justify-center p-2 text-orange-500 cursor-help" title="AI Review">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C12 7.52285 16.4772 12 22 12C16.4772 12 12 16.4772 12 22C12 16.4772 7.52285 12 2 12C7.52285 12 12 7.52285 12 2Z" />
+            </svg>
             <span className="absolute top-full mt-2 w-max rounded-md border border-border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md opacity-0 scale-95 transition-all group-hover:opacity-100 group-hover:scale-100 pointer-events-none z-50">
               AI Review
             </span>

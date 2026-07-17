@@ -375,7 +375,7 @@ export function ScenarioForm() {
               void useRiskReportStore.getState().generateFromSimulation(latestOutput)
               router.push("/report")
             }}
-            className="flex-1 h-10 text-sm font-bold tracking-wider gap-2 bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md active:scale-[0.96] will-change-transform transition-[background-color,transform,box-shadow,opacity] duration-150 ease-out"
+            className="flex-1 h-10 text-sm font-bold tracking-wider gap-2 bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md active:scale-[0.96] will-change-transform transition-[background-color,transform,box-shadow,opacity] duration-150 ease-out"
           >
             <FileText className="size-4" />
             Generate Report

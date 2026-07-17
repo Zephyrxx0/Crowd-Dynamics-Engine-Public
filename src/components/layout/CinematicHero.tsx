@@ -2,9 +2,7 @@
 
 import { useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Activity, ArrowRight, Waves } from "lucide-react"
-import { useScenarioStore } from "@/hooks/useScenarioStore"
-import { cn } from "@/lib/utils"
+import { Activity, ArrowRight } from "lucide-react"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 import { createDrawable, createTimeline } from "animejs"
@@ -18,7 +16,6 @@ const ACCENT_D = `M -50,980 C 450,800 650,200 1490,-50`
 const GLOW_D = `M -50,1010 C 500,850 700,150 1490,-50`
 
 export function CinematicHero() {
-  const applyPreset = useScenarioStore((state) => state.applyPreset)
   const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const mainCurveRef = useRef<SVGPathElement>(null)
@@ -49,6 +46,13 @@ export function CinematicHero() {
   }, [])
 
   useGSAP(() => {
+    gsap.from(".hero-flux", {
+      opacity: 0,
+      y: 60,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.1,
+    })
     gsap.from(".hero-headline", {
       y: 60,
       opacity: 0,
@@ -143,44 +147,53 @@ export function CinematicHero() {
 
       <main className="relative z-10 flex min-h-screen flex-col justify-between pt-16 pb-16 px-6 md:px-10 lg:px-20">
         {/* Main headline block */}
-        <div className="flex w-full flex-col gap-0">
+        <div className="flex w-full">
+          {/* [Flux] vertical label */}
+          <span
+            className="hero-flux font-pixel text-[clamp(4rem,14vw,10rem)] leading-[0.9] tracking-wider text-primary shrink-0 rotate-180"
+            style={{ writingMode: "vertical-rl", textOrientation: "sideways" }}
+          >
+            [Flux]
+          </span>
 
-          {/* Row 1: CROWD + descriptor */}
-          <div className="flex flex-col md:flex-row md:items-end md:gap-8">
-            <p className="hero-fade-in text-muted-foreground text-xs leading-5 md:text-sm md:text-right md:max-w-[180px] md:pb-4 md:shrink-0">
-              Deterministic crowd simulation for stadium command centers and fan interfaces.
-            </p>
-            <h1
-              className="hero-headline text-[clamp(4rem,14vw,10rem)] leading-[0.9] font-light tracking-wider uppercase text-foreground"
-              style={{ textWrap: "balance" }}
-            >
-              CROWD
-            </h1>
-          </div>
+          <div className="flex flex-col gap-0 flex-1 min-w-0 ml-6 md:ml-8 lg:ml-10">
+            {/* Row 1: CROWD + descriptor */}
+            <div className="flex flex-col md:flex-row md:items-end md:gap-8">
+              <p className="hero-fade-in text-muted-foreground text-xs leading-5 md:text-sm md:text-right md:max-w-[180px] md:pb-4 md:shrink-0">
+                Deterministic crowd simulation for stadium command centers and fan interfaces.
+              </p>
+              <h1
+                className="hero-headline text-[clamp(4rem,14vw,10rem)] leading-[0.9] tracking-wider uppercase text-foreground"
+                style={{ textWrap: "balance" }}
+              >
+                CROWD
+              </h1>
+            </div>
 
-          {/* Row 2: DYNA + icon + MICS */}
-          <div className="flex items-center">
-            <h1 className="hero-headline flex items-center text-[clamp(4rem,14vw,10rem)] leading-[0.9] font-light tracking-wider uppercase text-foreground">
-              <span>DY</span>
-              <Activity
-                strokeWidth={1}
-                className="text-primary shrink-0"
-                style={{ width: "clamp(3rem,10vw,8rem)", height: "clamp(3rem,10vw,8rem)" }}
-              />
-              <span>NAMICS</span>
-            </h1>
-          </div>
+            {/* Row 2: DYNA + icon + MICS */}
+            <div className="flex items-center">
+              <h1 className="hero-headline flex items-center text-[clamp(4rem,14vw,10rem)] leading-[0.9] tracking-wider uppercase text-foreground font-pixel-triangle">
+                <span>DY</span>
+                <Activity
+                  strokeWidth={1}
+                  className="text-primary shrink-0"
+                  style={{ width: "clamp(3rem,10vw,8rem)", height: "clamp(3rem,10vw,8rem)" }}
+                />
+                <span>NAMICS</span>
+              </h1>
+            </div>
 
-          {/* Row 3: ENGINE + descriptor */}
-          <div className="flex flex-col md:flex-row md:items-end md:gap-8">
-            <h1
-              className="hero-headline text-[clamp(4rem,14vw,10rem)] leading-[0.9] font-light tracking-wider uppercase text-primary"
-            >
-              ENGINE
-            </h1>
-            <p className="hero-fade-in text-muted-foreground text-xs leading-5 md:text-sm md:max-w-[200px] md:pb-4">
-              Open to all crowd scenarios — fire egress, VIP routing, peak congestion, and crisis response.
-            </p>
+            {/* Row 3: ENGINE + descriptor */}
+            <div className="flex flex-col md:flex-row md:items-end md:gap-8">
+              <h1
+                className="hero-headline text-[clamp(4rem,14vw,10rem)] leading-[0.9] tracking-wider uppercase text-primary font-pixel-square"
+              >
+                ENGINE
+              </h1>
+              <p className="hero-fade-in text-muted-foreground text-xs leading-5 md:text-sm md:max-w-[200px] md:pb-4">
+                Open to all crowd scenarios — fire egress, VIP routing, peak congestion, and crisis response.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -193,10 +206,7 @@ export function CinematicHero() {
               <div className="text-xs tracking-widest uppercase text-muted-foreground whitespace-nowrap">
                 Stadium · New York · 2026
               </div>
-              <div className="flex items-end gap-2">
-                <span className="text-2xl font-thin uppercase tracking-widest text-foreground md:text-4xl">SIMULATOR</span>
-                <span className="text-2xl font-bold text-primary italic md:text-4xl">v2</span>
-              </div>
+              <span className="text-2xl font-thin uppercase tracking-widest text-foreground md:text-4xl">SIMULATOR</span>
             </div>
 
             {/* Right: CTAs */}
@@ -204,34 +214,13 @@ export function CinematicHero() {
               <button
                 type="button"
                 id="hero-enter-workspace"
-                className={cn(
-                  "group flex h-12 items-center gap-3 border border-foreground bg-foreground",
-                  "px-8 text-sm font-semibold uppercase tracking-wider text-background",
-                  "transition-all duration-200 hover:bg-primary hover:border-primary",
-                  "@media (prefers-reduced-motion: no-preference) [&]:transition-all"
-                )}
+                className="group flex h-12 items-center gap-3 border border-foreground bg-foreground px-8 text-sm font-semibold uppercase tracking-wider text-background transition-all duration-200 hover:bg-primary hover:border-primary"
                 onClick={() => router.push("/simulate")}
               >
                 <span>Enter Workspace</span>
                 <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
               </button>
 
-              <button
-                type="button"
-                id="hero-run-crisis"
-                className={cn(
-                  "group flex h-12 items-center gap-3 border border-border",
-                  "bg-transparent px-8 text-sm font-semibold uppercase tracking-wider text-foreground",
-                  "transition-colors duration-200 hover:border-primary hover:text-primary"
-                )}
-                onClick={() => {
-                  applyPreset("crisis")
-                  router.push("/simulate")
-                }}
-              >
-                <Waves className="h-4 w-4 text-primary shrink-0" />
-                <span>Run Crisis Scenario</span>
-              </button>
             </div>
           </div>
         </div>

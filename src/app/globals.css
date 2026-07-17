@@ -114,7 +114,10 @@
 @theme inline {
   --font-sans: "Geist Variable", sans-serif;
   --font-fixel: "FixelPont", sans-serif;
-  --font-pixel: var(--font-geist-pixel), sans-serif;
+  --font-pixel: var(--font-geist-pixel-circle), sans-serif;
+  --font-geist-mono: var(--font-geist-mono), monospace;
+  --font-pixel-square: var(--font-geist-pixel-square), sans-serif;
+  --font-pixel-triangle: var(--font-geist-pixel-triangle), sans-serif;
   --font-heading: var(--font-fixel);
 
   --color-background: var(--background);
