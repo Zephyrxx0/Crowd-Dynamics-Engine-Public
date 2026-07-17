@@ -2,8 +2,8 @@ import { useState } from "react"
 import { VisualizationWorkspace } from "@/visualization/components/VisualizationWorkspace"
 import { CinematicHero } from "./CinematicHero"
 import { MagneticDock } from "./MagneticDock"
-import { ScenarioSidebar } from "@/components/config/ScenarioSidebar"
 import { PresetsToolbar } from "@/components/config/PresetsToolbar"
+import { ScenarioSidebar } from "@/components/config/ScenarioSidebar"
 
 export function AppLayout() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -22,18 +22,13 @@ export function AppLayout() {
         <main className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-8">
           <div className="flex flex-col xl:flex-row gap-6 items-start">
             {activeTab === "simulate" && (
-              <section id="simulate" className="w-full xl:w-[520px] shrink-0 rounded-none border border-border bg-card p-6" data-route-surface="simulate">
-                <div className="mb-5 border-b border-border/60 pb-4">
-                  <h2 className="text-xl font-bold tracking-tight text-primary uppercase">Scenario Config</h2>
-                  <p className="text-sm text-foreground/70 mt-1 mb-4">
-                    Configure and run scenarios to drive visualization.
-                  </p>
+              <section id="simulate" className="w-full xl:w-[520px] shrink-0 rounded-xl bg-card p-6 ring-1 ring-foreground/10 transition-shadow duration-200" data-route-surface="simulate">
+                <div className="mb-4 border-b border-border/60 pb-3.5">
+                  <h2 className="text-sm font-semibold uppercase tracking-widest text-primary">Scenario Config</h2>
                   <PresetsToolbar />
                 </div>
-                <div className="space-y-4">
-                  <div className="text-sm">
-                    <ScenarioSidebar />
-                  </div>
+                <div className="text-sm">
+                  <ScenarioSidebar />
                 </div>
               </section>
             )}

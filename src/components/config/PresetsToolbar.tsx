@@ -13,13 +13,13 @@ export function PresetsToolbar() {
   const applyPreset = useScenarioStore((state) => state.applyPreset)
 
   return (
-    <div className="flex flex-wrap gap-2" data-testid="presets-toolbar">
+    <div className="flex flex-wrap gap-1.5" data-testid="presets-toolbar">
       {PRESET_BUTTONS.map((preset) => (
         <Button
           key={preset.key}
           variant="outline"
           size="sm"
-          className="border-border text-foreground/70 hover:text-primary hover:border-primary/40 text-xs font-semibold tracking-wider transition-all"
+          className="text-xs font-semibold transition-[color,border-color,transform,box-shadow] duration-150 ease-out active:scale-[0.96] will-change-transform"
           onClick={() => applyPreset(preset.key)}
           data-testid={`preset-${preset.key}`}
         >
