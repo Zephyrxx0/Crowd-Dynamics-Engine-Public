@@ -27,7 +27,7 @@ const CHART_SIZE = {
 
 const TOP_ZONE_COUNT = 5
 
-function colorForBand(band: "green" | "amber" | "red") {
+function colorForBand(band: "green" | "amber" | "red" | "critical") {
   return RISK_LEGEND.find((entry) => entry.band === band)?.color ?? "#64748b"
 }
 
@@ -52,15 +52,29 @@ export function RiskLineChart({ output }: RiskLineChartProps) {
     [model.phaseOrder],
   )
 
+  const maxY = useMemo(() => {
+    let max = 1.0
+    for (const zone of visibleZoneIds) {
+      const points = model.zoneSeries[zone]?.points || []
+      for (const pt of points) {
+        if (pt.occupancyRatio > max) {
+          max = pt.occupancyRatio
+        }
+      }
+    }
+    // Snap to nearest 0.5 step above max
+    return Math.ceil(max * 2) / 2
+  }, [model.zoneSeries, visibleZoneIds])
+
   const yScale = useMemo(
     () =>
       scaleLinear()
-        .domain([0, 1])
+        .domain([0, maxY])
         .range([
           CHART_SIZE.height - CHART_SIZE.marginBottom,
           CHART_SIZE.marginTop,
         ]),
-    [],
+    [maxY],
   )
 
   const lineBuilder = useMemo(
@@ -155,7 +169,7 @@ export function RiskLineChart({ output }: RiskLineChartProps) {
           </text>
         ))}
 
-        {[0, 0.5, 1].map((tick) => (
+        {[0, maxY / 2, maxY].map((tick) => (
           <text
             key={`y-${tick}`}
             x={CHART_SIZE.marginLeft - 8}
