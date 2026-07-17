@@ -16,7 +16,7 @@ import { StadiumHeatmap } from "./StadiumHeatmap"
 
 import ThreeStadium from "@/components/three-stadium"
 
-const VISUAL_SIZE = "aspect-square max-w-[600px] w-full"
+const VISUAL_SIZE = "aspect-video w-full"
 
 export function VisualizationWorkspace({ activeTab }: { activeTab?: string }) {
   const latestSimulationOutput = useScenarioStore((state) => state.latestSimulationOutput)
@@ -29,21 +29,7 @@ export function VisualizationWorkspace({ activeTab }: { activeTab?: string }) {
     return buildVisualizationModel(latestSimulationOutput)
   }, [latestSimulationOutput])
 
-  if (!latestSimulationOutput || !model) {
-    return (
-      <section data-testid="visualization-workspace" className="space-y-4">
-        <h2 className="text-xl font-bold tracking-tight text-white uppercase">Workspace</h2>
-        <Alert data-testid="visualization-empty-state" className="rounded-none border-border">
-          <AlertTitle>Run a scenario to populate visual telemetry</AlertTitle>
-          <AlertDescription>
-            Execute a valid simulation from the config panel.
-          </AlertDescription>
-        </Alert>
 
-        {activeTab === "report" && <RiskReportPanel />}
-      </section>
-    )
-  }
 
   return (
     <section data-testid="visualization-workspace" className="space-y-6">
@@ -79,20 +65,32 @@ export function VisualizationWorkspace({ activeTab }: { activeTab?: string }) {
             </TabsContent>
 
             <TabsContent value="chart" className={`mt-0 ${VISUAL_SIZE}`}>
-              <ChartRevealShell label="Risk progression over time" className="w-full h-full border border-border bg-card p-4 shadow-sm rounded-lg">
-                <RiskLineChart output={latestSimulationOutput} />
-              </ChartRevealShell>
+              {!latestSimulationOutput ? (
+                <div className="w-full h-full border border-border bg-card p-4 shadow-sm rounded-lg flex items-center justify-center">
+                  <p className="text-sm text-muted-foreground">Run a scenario to view risk chart.</p>
+                </div>
+              ) : (
+                <ChartRevealShell label="Risk progression over time" className="w-full h-full border border-border bg-card p-4 shadow-sm rounded-lg">
+                  <RiskLineChart output={latestSimulationOutput} />
+                </ChartRevealShell>
+              )}
             </TabsContent>
 
             <TabsContent value="heatmap" className={`mt-0 ${VISUAL_SIZE}`}>
-              <div className="grid gap-4 grid-cols-[2fr_1fr] w-full h-full">
-                <div className="border border-border bg-card p-4 shadow-sm overflow-hidden relative rounded-lg min-h-0">
-                  <StadiumHeatmap latestZoneRisk={model.latestZoneRisk} />
+              {!model ? (
+                <div className="w-full h-full border border-border bg-card p-4 shadow-sm rounded-lg flex items-center justify-center">
+                  <p className="text-sm text-muted-foreground">Run a scenario to view heatmap.</p>
                 </div>
-                <div className="border border-border bg-card p-4 shadow-sm flex flex-col justify-center rounded-lg min-h-0">
-                  <RiskLegend />
+              ) : (
+                <div className="grid gap-4 grid-cols-[2fr_1fr] w-full h-full">
+                  <div className="border border-border bg-card p-4 shadow-sm overflow-hidden relative rounded-lg min-h-0">
+                    <StadiumHeatmap latestZoneRisk={model.latestZoneRisk} />
+                  </div>
+                  <div className="border border-border bg-card p-4 shadow-sm flex flex-col justify-center rounded-lg min-h-0">
+                    <RiskLegend />
+                  </div>
                 </div>
-              </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
