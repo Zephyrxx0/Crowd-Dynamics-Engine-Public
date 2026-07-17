@@ -10,6 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { StadiumSim } from "@/simulation/adapters/StadiumSim"
@@ -23,12 +24,13 @@ import { ValidationList } from "./ValidationList"
 type ScenarioRowProps = {
   label: string
   children: React.ReactNode
+  className?: string
 }
 
-const ScenarioRow = memo(function ScenarioRow({ label, children }: ScenarioRowProps) {
+const ScenarioRow = memo(function ScenarioRow({ label, children, className }: ScenarioRowProps) {
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{label}</span>
+    <label className={`flex flex-col gap-1.5 ${className ?? ""}`}>
+      <span className="text-xs font-medium text-foreground/70">{label}</span>
       {children}
     </label>
   )
@@ -102,14 +104,14 @@ export function ScenarioForm() {
   const zoneRows = useMemo(
     () =>
       zones.fields.map((field, index) => (
-        <div key={field.id} className="flex flex-col gap-2 rounded-lg border border-border bg-background p-3 shadow-sm" data-testid="zones-row">
-          <ScenarioRow label="Zone ID">
-            <Input className="bg-background border-border" {...form.register(`zones.${index}.id` as const)} />
+        <div key={field.id} className="flex gap-3 py-3 first:pt-0" data-testid="zones-row">
+          <ScenarioRow label="Zone ID" className="flex-1">
+            <Input className="bg-background border-border h-9" {...form.register(`zones.${index}.id` as const)} />
           </ScenarioRow>
-          <ScenarioRow label="Capacity">
+          <ScenarioRow label="Capacity" className="flex-1">
             <Input
               type="number"
-              className="bg-background border-border"
+              className="bg-background border-border h-9"
               {...form.register(`zones.${index}.capacity` as const, { valueAsNumber: true })}
             />
           </ScenarioRow>
@@ -119,128 +121,154 @@ export function ScenarioForm() {
   )
 
   return (
-    <form className="flex flex-col gap-6" onSubmit={(event) => event.preventDefault()} data-testid="scenario-form">
-      <div className="grid grid-cols-2 gap-4 rounded-lg border border-border bg-background p-4 shadow-sm">
-        <ScenarioRow label="Schema Version">
-          <Input className="bg-background border-border font-mono text-xs" {...form.register("schemaVersion")} />
-        </ScenarioRow>
-        <ScenarioRow label="Mode">
-          <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" {...form.register("mode")}>
-            <option value="zone">zone</option>
-            <option value="detailed">detailed</option>
-          </select>
-        </ScenarioRow>
-      </div>
+    <form className="flex flex-col gap-5" onSubmit={(event) => event.preventDefault()} data-testid="scenario-form">
+      <Tabs defaultValue="zones" className="w-full">
+        <TabsList className="w-full grid grid-cols-4 gap-0.5 bg-muted p-0.5 h-auto rounded-md">
+          <TabsTrigger value="zones" className="text-xs font-semibold data-active:bg-background data-active:shadow-none rounded">Zones</TabsTrigger>
+          <TabsTrigger value="gates" className="text-xs font-semibold data-active:bg-background data-active:shadow-none rounded">Gates</TabsTrigger>
+          <TabsTrigger value="phases" className="text-xs font-semibold data-active:bg-background data-active:shadow-none rounded">Phases</TabsTrigger>
+          <TabsTrigger value="arrivals" className="text-xs font-semibold data-active:bg-background data-active:shadow-none rounded">Arrivals</TabsTrigger>
+        </TabsList>
 
-      <section className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Zones</h3>
-        <div className="flex flex-col gap-3">
-          {zoneRows}
-        </div>
-      </section>
+        <Accordion className="mt-4" data-testid="calibration-accordion">
+          <AccordionItem value="advanced-calibration" className="border-border rounded-md border px-3">
+            <AccordionTrigger className="text-xs font-bold uppercase tracking-widest text-primary/70 hover:no-underline hover:text-primary py-2.5" data-testid="advanced-calibration-trigger">Advanced Calibration</AccordionTrigger>
+            <AccordionContent>
+              <div className="pb-3" data-testid="advanced-calibration-content">
+                {mode === "detailed" ? (
+                  <ScenarioRow label="Sub-zones per zone">
+                    <Input
+                      type="number"
+                      className="bg-background border-border h-9"
+                      {...form.register("detailed.subZonesPerZone", { valueAsNumber: true })}
+                    />
+                  </ScenarioRow>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Switch mode to <strong className="text-foreground">Detailed</strong> to edit sub-zone calibration.
+                  </p>
+                )}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
-      <section className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Gates</h3>
-        <div className="flex flex-col gap-3">
-          {gates.fields.map((field, index) => (
-            <div key={field.id} className="flex flex-col gap-2 rounded-lg border border-border bg-background p-3 shadow-sm">
-              <ScenarioRow label="Gate ID">
-                <Input className="bg-background border-border" {...form.register(`gates.${index}.id` as const)} />
-              </ScenarioRow>
-              <ScenarioRow label="Zone">
-                <Input className="bg-background border-border" {...form.register(`gates.${index}.zoneId` as const)} />
-              </ScenarioRow>
-              <ScenarioRow label="Throughput/min">
-                <Input
-                  type="number"
-                  className="bg-background border-border"
-                  {...form.register(`gates.${index}.throughputPerMin` as const, { valueAsNumber: true })}
-                />
-              </ScenarioRow>
-              <ScenarioRow label="Delay (min)">
-                <Input
-                  type="number"
-                  className="bg-background border-border"
-                  {...form.register(`gates.${index}.delayMin` as const, { valueAsNumber: true })}
-                />
-              </ScenarioRow>
+        <div className="mt-5 space-y-4">
+          <div className="flex gap-3">
+            <ScenarioRow label="Schema Version" className="flex-1">
+              <Input className="bg-background border-border font-mono text-xs h-9" {...form.register("schemaVersion")} />
+            </ScenarioRow>
+            <ScenarioRow label="Mode" className="flex-1">
+              <select
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                {...form.register("mode")}
+              >
+                <option value="zone">Zone</option>
+                <option value="detailed">Detailed</option>
+              </select>
+            </ScenarioRow>
+          </div>
+
+          <TabsContent value="zones" className="mt-0">
+            <div className="divide-y divide-border/40 rounded-md border border-border/50 bg-card p-3">
+              <div className="flex items-center gap-3 pb-2.5 mb-2 border-b border-border/30">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Zone Definitions</span>
+                <span className="text-[10px] text-muted-foreground">— {zones.fields.length} configured</span>
+              </div>
+              {zoneRows}
             </div>
-          ))}
-        </div>
-      </section>
+          </TabsContent>
 
-      <section className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Phases</h3>
-        <div className="flex flex-col gap-3">
-          {phases.fields.map((field, index) => (
-            <div key={field.id} className="flex flex-col gap-2 rounded-lg border border-border bg-background p-3 shadow-sm">
-              <ScenarioRow label="Phase ID">
-                <Input className="bg-background border-border" {...form.register(`phases.${index}.id` as const)} />
-              </ScenarioRow>
-              <ScenarioRow label="Order">
-                <Input
-                  type="number"
-                  className="bg-background border-border"
-                  {...form.register(`phases.${index}.order` as const, { valueAsNumber: true })}
-                />
-              </ScenarioRow>
-              <ScenarioRow label="Duration (min)">
-                <Input
-                  type="number"
-                  className="bg-background border-border"
-                  {...form.register(`phases.${index}.durationMin` as const, { valueAsNumber: true })}
-                />
-              </ScenarioRow>
+          <TabsContent value="gates" className="mt-0">
+            <div className="divide-y divide-border/40 rounded-md border border-border/50 bg-card p-3">
+              <div className="flex items-center gap-3 pb-2.5 mb-2 border-b border-border/30">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Gate Configurations</span>
+                <span className="text-[10px] text-muted-foreground">— {gates.fields.length} configured</span>
+              </div>
+              {gates.fields.map((field, index) => (
+                <div key={field.id} className="grid grid-cols-2 gap-x-3 gap-y-2 py-3 first:pt-0">
+                  <ScenarioRow label="Gate ID">
+                    <Input className="bg-background border-border h-9" {...form.register(`gates.${index}.id` as const)} />
+                  </ScenarioRow>
+                  <ScenarioRow label="Zone">
+                    <Input className="bg-background border-border h-9" {...form.register(`gates.${index}.zoneId` as const)} />
+                  </ScenarioRow>
+                  <ScenarioRow label="Throughput/min">
+                    <Input
+                      type="number"
+                      className="bg-background border-border h-9"
+                      {...form.register(`gates.${index}.throughputPerMin` as const, { valueAsNumber: true })}
+                    />
+                  </ScenarioRow>
+                  <ScenarioRow label="Delay (min)">
+                    <Input
+                      type="number"
+                      className="bg-background border-border h-9"
+                      {...form.register(`gates.${index}.delayMin` as const, { valueAsNumber: true })}
+                    />
+                  </ScenarioRow>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </TabsContent>
 
-      <section className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-primary/80">Arrivals</h3>
-        <div className="flex flex-col gap-3">
-          {arrivals.fields.map((field, index) => (
-            <div key={field.id} className="flex flex-col gap-2 rounded-lg border border-border bg-background p-3 shadow-sm">
-              <ScenarioRow label="Phase">
-                <Input className="bg-background border-border" {...form.register(`arrivals.${index}.phaseId` as const)} />
-              </ScenarioRow>
-              <ScenarioRow label="Zone">
-                <Input className="bg-background border-border" {...form.register(`arrivals.${index}.zoneId` as const)} />
-              </ScenarioRow>
-              <ScenarioRow label="Demand Fans">
-                <Input
-                  type="number"
-                  className="bg-background border-border"
-                  {...form.register(`arrivals.${index}.demandFans` as const, { valueAsNumber: true })}
-                />
-              </ScenarioRow>
+          <TabsContent value="phases" className="mt-0">
+            <div className="divide-y divide-border/40 rounded-md border border-border/50 bg-card p-3">
+              <div className="flex items-center gap-3 pb-2.5 mb-2 border-b border-border/30">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Phase Schedule</span>
+                <span className="text-[10px] text-muted-foreground">— {phases.fields.length} configured</span>
+              </div>
+              {phases.fields.map((field, index) => (
+                <div key={field.id} className="flex gap-3 py-3 first:pt-0">
+                  <ScenarioRow label="Phase ID" className="flex-1">
+                    <Input className="bg-background border-border h-9" {...form.register(`phases.${index}.id` as const)} />
+                  </ScenarioRow>
+                  <ScenarioRow label="Order" className="w-20">
+                    <Input
+                      type="number"
+                      className="bg-background border-border h-9"
+                      {...form.register(`phases.${index}.order` as const, { valueAsNumber: true })}
+                    />
+                  </ScenarioRow>
+                  <ScenarioRow label="Duration (min)" className="flex-1">
+                    <Input
+                      type="number"
+                      className="bg-background border-border h-9"
+                      {...form.register(`phases.${index}.durationMin` as const, { valueAsNumber: true })}
+                    />
+                  </ScenarioRow>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </TabsContent>
 
-      <Accordion data-testid="calibration-accordion">
-        <AccordionItem value="advanced-calibration" className="border-border">
-          <AccordionTrigger className="text-xs font-bold uppercase tracking-widest text-primary/80 hover:no-underline hover:text-primary" data-testid="advanced-calibration-trigger">Advanced Calibration</AccordionTrigger>
-          <AccordionContent>
-            <div className="grid grid-cols-1 gap-3 rounded-lg border border-border bg-background p-3 shadow-sm mt-2" data-testid="advanced-calibration-content">
-              {mode === "detailed" ? (
-                <ScenarioRow label="Detailed sub-zones per zone">
-                  <Input
-                    type="number"
-                    className="bg-background border-border"
-                    {...form.register("detailed.subZonesPerZone", { valueAsNumber: true })}
-                  />
-                </ScenarioRow>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Switch mode to <strong className="text-foreground">detailed</strong> to edit sub-zone calibration.
-                </p>
-              )}
+          <TabsContent value="arrivals" className="mt-0">
+            <div className="divide-y divide-border/40 rounded-md border border-border/50 bg-card p-3">
+              <div className="flex items-center gap-3 pb-2.5 mb-2 border-b border-border/30">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Arrival Patterns</span>
+                <span className="text-[10px] text-muted-foreground">— {arrivals.fields.length} configured</span>
+              </div>
+              {arrivals.fields.map((field, index) => (
+                <div key={field.id} className="flex gap-3 py-3 first:pt-0">
+                  <ScenarioRow label="Phase" className="flex-1">
+                    <Input className="bg-background border-border h-9" {...form.register(`arrivals.${index}.phaseId` as const)} />
+                  </ScenarioRow>
+                  <ScenarioRow label="Zone" className="flex-1">
+                    <Input className="bg-background border-border h-9" {...form.register(`arrivals.${index}.zoneId` as const)} />
+                  </ScenarioRow>
+                  <ScenarioRow label="Demand Fans" className="flex-1">
+                    <Input
+                      type="number"
+                      className="bg-background border-border h-9"
+                      {...form.register(`arrivals.${index}.demandFans` as const, { valueAsNumber: true })}
+                    />
+                  </ScenarioRow>
+                </div>
+              ))}
             </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+          </TabsContent>
+        </div>
+      </Tabs>
 
       <ValidationList errors={validationErrors} />
 
@@ -248,7 +276,7 @@ export function ScenarioForm() {
         type="button" 
         data-testid="run-button" 
         onClick={form.handleSubmit(onValidInput, onInvalidInput)}
-        className="w-full bg-primary text-primary-foreground font-bold tracking-widest uppercase hover:bg-primary/90 transition-all"
+        className="w-full bg-primary text-primary-foreground font-bold tracking-widest uppercase hover:bg-primary/90 transition-all h-11"
       >
         Run Simulation
       </Button>

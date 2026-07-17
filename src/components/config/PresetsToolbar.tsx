@@ -19,7 +19,7 @@ export function PresetsToolbar() {
           key={preset.key}
           variant="outline"
           size="sm"
-          className="bg-black/40 border-white/10 hover:bg-primary/20 hover:text-primary hover:border-primary/50 text-xs font-semibold tracking-wider transition-all"
+          className="border-border text-foreground/70 hover:text-primary hover:border-primary/40 text-xs font-semibold tracking-wider transition-all"
           onClick={() => applyPreset(preset.key)}
           data-testid={`preset-${preset.key}`}
         >
