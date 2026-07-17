@@ -11,6 +11,7 @@ const PRESET_BUTTONS = [
 
 export function PresetsToolbar() {
   const applyPreset = useScenarioStore((state) => state.applyPreset)
+  const randomizeScenario = useScenarioStore((state) => state.randomizeScenario)
 
   return (
     <div className="flex flex-wrap gap-1.5" data-testid="presets-toolbar">
@@ -26,6 +27,16 @@ export function PresetsToolbar() {
           {preset.label}
         </Button>
       ))}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="text-xs font-semibold transition-[color,border-color,transform,box-shadow] duration-150 ease-out active:scale-[0.96] will-change-transform bg-primary/5 text-primary hover:bg-primary/10 border-primary/20"
+        onClick={() => randomizeScenario()}
+        data-testid="preset-random"
+      >
+        Random
+      </Button>
     </div>
   )
 }

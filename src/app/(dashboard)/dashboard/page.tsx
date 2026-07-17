@@ -25,7 +25,7 @@ export default function DashboardPage() {
     const res = await fetch("/api/match");
     if (!res.ok) throw new Error(`Poll failed: ${res.status}`);
     const json = await res.json();
-    setMatch(json.match); // Update store with live match
+    setMatch(json.match, json.upcomingMatch); // Update store with live match and upcoming match
     return json.match;
   }, [setMatch]);
 

@@ -10,15 +10,11 @@ import { Calendar, TriangleAlert } from "lucide-react";
 interface MatchBannerProps {
   error?: string | null;
   isLoading?: boolean;
-  upcomingMatch?: {
-    homeTeam: string;
-    awayTeam: string;
-    localDate: string;
-  } | null;
 }
 
-export function MatchBanner({ error, isLoading, upcomingMatch }: MatchBannerProps) {
+export function MatchBanner({ error, isLoading }: MatchBannerProps) {
   const match = useLiveStore((s) => s.match);
+  const upcomingMatch = useLiveStore((s) => s.upcomingMatch);
 
   if (isLoading) {
     return (

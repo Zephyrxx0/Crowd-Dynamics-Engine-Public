@@ -36,7 +36,7 @@ export function ComparisonPanel() {
             <option value="" className="bg-background text-foreground">Select baseline</option>
             {runHistory.map((run) => (
               <option key={run.id} value={run.id} className="bg-background text-foreground">
-                {run.scenarioLabel} | {new Date(run.createdAt).toLocaleTimeString()} | {run.runDeterministicHash}
+                {run.scenarioLabel} | {new Date(run.createdAt).toLocaleTimeString()}
               </option>
             ))}
           </select>
@@ -52,7 +52,7 @@ export function ComparisonPanel() {
             <option value="" className="bg-background text-foreground">Select candidate</option>
             {runHistory.map((run) => (
               <option key={run.id} value={run.id} className="bg-background text-foreground">
-                {run.scenarioLabel} | {new Date(run.createdAt).toLocaleTimeString()} | {run.runDeterministicHash}
+                {run.scenarioLabel} | {new Date(run.createdAt).toLocaleTimeString()}
               </option>
             ))}
           </select>
@@ -67,14 +67,14 @@ export function ComparisonPanel() {
         <div className="space-y-4" data-testid="comparison-results">
           <div className="bg-muted border border-border p-4 rounded-lg">
             <p className="text-sm text-foreground font-mono">
-              Overall peak change: <span className="text-primary">{(model.overall.baselinePeakRatio * 100).toFixed(1)}%</span> {"->"} <span className="text-primary">{(model.overall.candidatePeakRatio * 100).toFixed(1)}%</span>
+              Overall peak change: <span className="text-foreground font-semibold">{(model.overall.baselinePeakRatio * 100).toFixed(1)}%</span> {"->"} <span className="text-foreground font-semibold">{(model.overall.candidatePeakRatio * 100).toFixed(1)}%</span>
               {' '}(<span className={model.overall.absoluteDelta >= 0 ? "text-red-400" : "text-green-400"}>{model.overall.absoluteDelta >= 0 ? "+" : ""}{(model.overall.absoluteDelta * 100).toFixed(1)} pts</span>, <span className={model.overall.percentDelta >= 0 ? "text-red-400" : "text-green-400"}>{model.overall.percentDelta >= 0 ? "+" : ""}{model.overall.percentDelta.toFixed(1)}%</span>)
             </p>
           </div>
           <ul className="space-y-2 text-sm text-foreground font-mono">
             {model.topZoneDeltas.map((zone) => (
               <li key={zone.zoneId} className="bg-muted border border-border p-3 rounded-lg flex items-center gap-2">
-                <strong className="text-primary uppercase mr-2">{zone.zoneId}</strong>: {(zone.baselinePeakRatio * 100).toFixed(1)}% {"->"} {(zone.candidatePeakRatio * 100).toFixed(1)}%
+                <strong className="text-foreground uppercase mr-2">{zone.zoneId}</strong>: {(zone.baselinePeakRatio * 100).toFixed(1)}% {"->"} {(zone.candidatePeakRatio * 100).toFixed(1)}%
                 {' '}(<span className={zone.absoluteDelta >= 0 ? "text-red-400" : "text-green-400"}>{zone.absoluteDelta >= 0 ? "+" : ""}{(zone.absoluteDelta * 100).toFixed(1)} pts</span>, <span className={zone.percentDelta >= 0 ? "text-red-400" : "text-green-400"}>{zone.percentDelta >= 0 ? "+" : ""}{zone.percentDelta.toFixed(1)}%</span>)
                 {' '}| <span className="text-muted-foreground text-xs uppercase tracking-widest">{zone.severityTransition}</span>
               </li>

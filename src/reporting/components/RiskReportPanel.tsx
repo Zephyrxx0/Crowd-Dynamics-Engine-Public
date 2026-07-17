@@ -30,7 +30,7 @@ export function RiskReportPanel() {
       {status === "idle" && !report ? (
         <Alert data-testid="report-idle-state" className="bg-muted border-border text-foreground">
           <AlertTitle>Run a scenario to generate risk reporting</AlertTitle>
-          <AlertDescription className="text-muted-foreground">Report generation starts automatically after a valid simulation run.</AlertDescription>
+          <AlertDescription className="text-muted-foreground">Click "Generate Report" on the simulation dashboard to run AI analysis on your results.</AlertDescription>
         </Alert>
       ) : null}
 

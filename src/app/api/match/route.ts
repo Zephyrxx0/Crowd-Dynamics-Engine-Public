@@ -38,6 +38,14 @@ export async function GET(_request: NextRequest) {
     const games = parsed.data.games;
     const liveMatchGame = findLiveMatch(games);
     const match = liveMatchGame ? mapGameToMatchState(liveMatchGame) : null;
+    
+    const { findNextUpcoming } = await import("@/lib/api/worldcup26");
+    const upcomingGame = findNextUpcoming(games);
+    const upcomingMatch = upcomingGame ? {
+      homeTeam: upcomingGame.home_team_name_en ?? upcomingGame.home_team_label ?? "TBD",
+      awayTeam: upcomingGame.away_team_name_en ?? upcomingGame.away_team_label ?? "TBD",
+      localDate: upcomingGame.local_date,
+    } : null;
 
     const allGames = games.map((game) => ({
       homeTeam: game.home_team_name_en ?? game.home_team_label ?? "TBD",
@@ -48,7 +56,7 @@ export async function GET(_request: NextRequest) {
       score: `${game.home_score} - ${game.away_score}`,
     }));
 
-    return Response.json({ match, allGames });
+    return Response.json({ match, upcomingMatch, allGames });
   } catch (err: any) {
     return Response.json(
       { error: err.message || "Network failure", status: "fetch_error" },

@@ -4,10 +4,12 @@ import { type MatchState } from "@/types/match";
 
 export interface MatchSlice {
   match: MatchState | null;
-  setMatch: (match: MatchState | null) => void;
+  upcomingMatch: { homeTeam: string; awayTeam: string; localDate: string } | null;
+  setMatch: (match: MatchState | null, upcomingMatch?: { homeTeam: string; awayTeam: string; localDate: string } | null) => void;
 }
 
 export const createMatchSlice: StateCreator<LiveStore, [], [], MatchSlice> = (set) => ({
   match: null,
-  setMatch: (match) => set({ match }),
+  upcomingMatch: null,
+  setMatch: (match, upcomingMatch = null) => set({ match, upcomingMatch }),
 });

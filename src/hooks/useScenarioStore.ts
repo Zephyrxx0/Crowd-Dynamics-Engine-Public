@@ -7,6 +7,7 @@ import { useRiskReportStore } from "@/hooks/useRiskReportStore"
 import { SimulationInputSchema, type SimulationInput } from "@/simulation/contracts/input.schema"
 import type { SimulationOutput } from "@/simulation/contracts/output.schema"
 import { presets, type PresetName } from "@/simulation/presets"
+import { StadiumSim } from "@/simulation/adapters/StadiumSim"
 
 const STORE_KEY = "scenario-store"
 
@@ -24,6 +25,7 @@ type ScenarioState = ScenarioStateSnapshot & {
   saveScenario: (name: string, input?: SimulationInput) => void
   loadScenario: (name: string) => void
   applyPreset: (preset: PresetName) => void
+  randomizeScenario: () => void
 }
 
 const defaultInput = presets.normal
@@ -65,7 +67,6 @@ export const useScenarioStore = create<ScenarioState>()(
         set({ latestSimulationOutput: output })
         if (output) {
           useComparisonStore.getState().appendRun(output)
-          void useRiskReportStore.getState().generateFromSimulation(output)
         }
       },
       saveScenario: (name, input) => {
@@ -89,7 +90,33 @@ export const useScenarioStore = create<ScenarioState>()(
         }
       },
       applyPreset: (presetName) => {
-        set({ currentInput: SimulationInputSchema.parse(presets[presetName]) })
+        const input = SimulationInputSchema.parse(presets[presetName])
+        set({ currentInput: input })
+        const output = StadiumSim.run(input)
+        get().setLatestSimulationOutput(output)
+      },
+      randomizeScenario: () => {
+        const current = get().currentInput
+        const randomized: SimulationInput = {
+          ...current,
+          zones: current.zones.map((z) => ({
+            ...z,
+            capacity: Math.floor(Math.random() * 4000) + 1000,
+          })),
+          gates: current.gates.map((g) => ({
+            ...g,
+            throughputPerMin: Math.floor(Math.random() * 150) + 50,
+            delayMin: Math.floor(Math.random() * 5),
+          })),
+          arrivals: current.arrivals.map((a) => ({
+            ...a,
+            demandFans: Math.floor(Math.random() * 5000) + 500,
+          })),
+        }
+        const parsed = SimulationInputSchema.parse(randomized)
+        set({ currentInput: parsed })
+        const output = StadiumSim.run(parsed)
+        get().setLatestSimulationOutput(output)
       },
     }),
     {

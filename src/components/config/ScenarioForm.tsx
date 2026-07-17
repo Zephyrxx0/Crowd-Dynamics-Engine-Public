@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { memo, useEffect, useMemo, useState } from "react"
 import { useFieldArray, useForm, type FieldErrors } from "react-hook-form"
-import { Play, Plus, X } from "lucide-react"
+import { Play, Plus, X, FileText } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import {
   Accordion,
@@ -19,6 +20,7 @@ import {
   type SimulationInput,
 } from "@/simulation/contracts/input.schema"
 import { useScenarioStore } from "@/hooks/useScenarioStore"
+import { useRiskReportStore } from "@/hooks/useRiskReportStore"
 import { ValidationList } from "./ValidationList"
 import { cn } from "@/lib/utils"
 
@@ -111,8 +113,10 @@ export function ScenarioForm() {
   const currentInput = useScenarioStore((state) => state.currentInput)
   const updateInput = useScenarioStore((state) => state.updateInput)
   const setLatestSimulationOutput = useScenarioStore((state) => state.setLatestSimulationOutput)
+  const latestOutput = useScenarioStore((state) => state.latestSimulationOutput)
   const [activeTab, setActiveTab] = useState("zones")
   const [validationErrors, setValidationErrors] = useState<string[]>([])
+  const router = useRouter()
 
   const form = useForm<SimulationInput>({
     resolver: zodResolver(SimulationInputSchema),
@@ -352,15 +356,32 @@ export function ScenarioForm() {
 
       <ValidationList errors={validationErrors} />
 
-      <Button
-        type="button"
-        data-testid="run-button"
-        onClick={form.handleSubmit(onValidInput, onInvalidInput)}
-        className="w-full h-10 text-sm font-bold tracking-wider gap-2 bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md active:scale-[0.96] will-change-transform transition-[background-color,transform,box-shadow] duration-150 ease-out stagger-enter [animation-delay:400ms]"
-      >
-        <Play className="size-4 fill-current" />
-        Run Simulation
-      </Button>
+      <div className="flex gap-3 stagger-enter [animation-delay:400ms]">
+        <Button
+          type="button"
+          data-testid="run-button"
+          onClick={form.handleSubmit(onValidInput, onInvalidInput)}
+          className="flex-1 h-10 text-sm font-bold tracking-wider gap-2 bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md active:scale-[0.96] will-change-transform transition-[background-color,transform,box-shadow,opacity] duration-150 ease-out"
+        >
+          <Play className="size-4 fill-current" />
+          Run Simulation
+        </Button>
+
+        {latestOutput && (
+          <Button
+            type="button"
+            data-testid="generate-report-button"
+            onClick={() => {
+              void useRiskReportStore.getState().generateFromSimulation(latestOutput)
+              router.push("/report")
+            }}
+            className="flex-1 h-10 text-sm font-bold tracking-wider gap-2 bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md active:scale-[0.96] will-change-transform transition-[background-color,transform,box-shadow,opacity] duration-150 ease-out"
+          >
+            <FileText className="size-4" />
+            Generate Report
+          </Button>
+        )}
+      </div>
     </form>
   )
 }
