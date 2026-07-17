@@ -2,11 +2,11 @@ import Link from "next/link"
 
 export function Footer() {
   return (
-    <footer className="w-full bg-[#e3d5ca] text-[#111111] py-16 mt-auto relative">
+    <footer className="w-full bg-[#e3d5ca] text-[#111111] py-24 mt-auto relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center mb-10">
           <span
-            className="text-4xl sm:text-5xl font-bold tracking-tight text-[#111111]"
+            className="text-[12rem] sm:text-15xl font-bold tracking-tight text-[#111111]"
             style={{ fontFamily: "fixelPont, sans-serif" }}
           >
             Zephyrxx0
