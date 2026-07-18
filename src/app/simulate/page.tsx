@@ -2,6 +2,10 @@ import { VisualizationWorkspace } from "@/visualization/components/Visualization
 import { ScenarioSidebar } from "@/components/config/ScenarioSidebar"
 import { PresetsToolbar } from "@/components/config/PresetsToolbar"
 
+export const metadata = {
+  title: "Simulate",
+};
+
 export default function SimulatePage() {
   return (
     <main className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-8 pb-24 flex-1 min-h-[calc(100vh-4rem)]">

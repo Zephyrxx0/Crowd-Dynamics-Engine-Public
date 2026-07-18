@@ -6,7 +6,10 @@ import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Predictive Fan Flow Simulator",
+  title: {
+    template: 'Flux | %s',
+    default: 'Flux',
+  },
   description: "Scenario-driven crowd risk simulation and planning",
   icons: {
     icon: "/favicon.svg",
