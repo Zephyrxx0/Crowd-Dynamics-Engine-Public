@@ -28,6 +28,7 @@ export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 
 export const ChatRequestSchema = z.object({
   messages: z.array(ChatMessageSchema).max(10).default([]),
+  zoneData: z.array(z.object({ zoneId: z.string(), occupancyRatio: z.number() })).optional(),
 });
 
 export type ChatRequest = z.infer<typeof ChatRequestSchema>;

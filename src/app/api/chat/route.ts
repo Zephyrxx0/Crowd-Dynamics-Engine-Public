@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
 
   const matchState = extractMatchState(request.nextUrl.searchParams);
   const language = request.nextUrl.searchParams.get("language") || "English";
-  const zoneData = getZoneData();
+  const zoneData = getZoneData(parsed.data.zoneData);
   const prompt = buildChatPrompt(zoneData, matchState, sanitizedMessages, language);
 
   const MAX_RETRIES = 1;
@@ -147,4 +147,3 @@ export async function POST(request: NextRequest) {
     },
   });
 }
-

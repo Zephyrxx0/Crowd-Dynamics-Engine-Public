@@ -2,7 +2,6 @@ import { NextRequest } from "next/server";
 import { streamGeminiResponse, validateAlertOutput, GeminiFetchError, GeminiRateLimitError } from "@/lib/ai/gemini";
 import { buildAlertPrompt } from "@/app/api/alert/prompts";
 import { getZoneData, extractMatchState } from "@/lib/api/zoneData";
-import { MatchState } from "@/types/match";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -20,7 +19,15 @@ export async function GET(request: NextRequest) {
 
   const encoder = new TextEncoder();
   const matchState = extractMatchState(request.nextUrl.searchParams);
-  const zoneData = getZoneData();
+  const zonesParam = request.nextUrl.searchParams.get("zones");
+  const zoneOccupancyData = zonesParam
+    ?.split(",")
+    .map((pair) => {
+      const [zoneId, ratio] = pair.split(":");
+      return { zoneId, occupancyRatio: Number.parseFloat(ratio) };
+    })
+    .filter((row) => row.zoneId && Number.isFinite(row.occupancyRatio));
+  const zoneData = getZoneData(zoneOccupancyData?.length ? zoneOccupancyData : undefined);
   const prompt = buildAlertPrompt(zoneData, matchState);
 
   const stream = new ReadableStream({

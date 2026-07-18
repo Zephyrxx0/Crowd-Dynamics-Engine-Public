@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useLiveStore } from "@/stores/liveStore";
-import { AlertEvent } from "@/types/alert";
+import { useScenarioStore } from "@/hooks/useScenarioStore";
 
 const RECONNECT_BASE = 1000;
 const RECONNECT_MAX = 8000;
@@ -37,7 +37,15 @@ export function useAlertStream() {
     }
 
     const { minute = 0, phase = "first-half", score = "0-0" } = matchRef.current ?? {};
-    const url = `/api/alert?minute=${minute}&phase=${phase}&score=${score}`;
+    let url = `/api/alert?minute=${minute}&phase=${phase}&score=${score}`;
+    const simOutput = useScenarioStore.getState().latestSimulationOutput;
+    const occupancyData =
+      simOutput?.phaseZoneMatrix
+        .map((row) => `${row.zoneId}:${row.occupancyRatio}`)
+        .join(",") ?? "";
+    if (occupancyData) {
+      url += `&zones=${encodeURIComponent(occupancyData)}`;
+    }
 
     const source = new EventSource(url);
 

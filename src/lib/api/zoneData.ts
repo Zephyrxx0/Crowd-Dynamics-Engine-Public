@@ -4,6 +4,7 @@ import type { SimulationOutput } from "@/simulation/contracts/output.schema";
 import type { MatchState } from "@/types/match";
 
 type ZoneEntry = { id: string; name: string; occupancy: number; capacity: number; occupancyRatio: number };
+export type ZoneOccupancyData = { zoneId: string; occupancyRatio: number }[];
 
 export const ZONE_FRIENDLY_NAMES: Record<string, string> = {
   north: "North Stand",
@@ -36,9 +37,23 @@ function deriveZoneEntries(output: SimulationOutput, capacities: Map<string, num
   );
 }
 
-export function getZoneData(simOutput?: SimulationOutput): ZoneEntry[] {
+export function getZoneData(simOutput?: SimulationOutput | ZoneOccupancyData): ZoneEntry[] {
   const input = presets.normal;
   const zoneCapacities = new Map(input.zones.map((z) => [z.id, z.capacity]));
+
+  if (Array.isArray(simOutput)) {
+    return simOutput.map((row) => {
+      const capacity = zoneCapacities.get(row.zoneId) ?? 1;
+      const occupancyRatio = Number.isFinite(row.occupancyRatio) ? Math.max(row.occupancyRatio, 0) : 0;
+      return {
+        id: row.zoneId,
+        name: ZONE_FRIENDLY_NAMES[row.zoneId] ?? row.zoneId,
+        occupancy: Math.round(capacity * occupancyRatio),
+        capacity,
+        occupancyRatio,
+      };
+    });
+  }
 
   if (simOutput) return deriveZoneEntries(simOutput, zoneCapacities);
   if (_zoneDataCache) return _zoneDataCache;
