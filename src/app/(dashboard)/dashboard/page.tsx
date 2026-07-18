@@ -12,6 +12,7 @@ import { useDemoSequence } from "@/hooks/useDemoSequence";
 import { usePhaseTransitionWatcher } from "@/hooks/usePhaseTransitionWatcher";
 import { useAlertStream } from "@/hooks/useAlertStream";
 import { AlertFeed } from "@/components/dashboard/AlertFeed";
+import { TransportWidget } from "@/components/dashboard/TransportWidget";
 
 export default function DashboardPage() {
   const initializeSim = useLiveStore((s) => s.initializeSim);
@@ -66,6 +67,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-4 p-4 md:p-6 max-w-5xl mx-auto">
       <AlertFeed isDisconnected={isDisconnected} />
+      <TransportWidget />
     </div>
   );
 }

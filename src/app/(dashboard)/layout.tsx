@@ -4,6 +4,7 @@ import { MatchBanner } from "@/components/dashboard/MatchBanner";
 import { WeatherCard } from "@/components/dashboard/WeatherCard";
 import { DemoModeBanner } from "@/components/dashboard/DemoModeBanner";
 import { DemoToggle } from "@/components/dashboard/DemoToggle";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Menu } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <h1 className="text-sm font-semibold uppercase tracking-widest text-foreground">Command Center</h1>
           
           <div className="ml-auto flex items-center gap-4">
+            <LanguageSwitcher />
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
