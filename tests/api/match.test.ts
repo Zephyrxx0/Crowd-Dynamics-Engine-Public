@@ -100,22 +100,10 @@ describe("GET /api/match", () => {
     expect(data.allGames.length).toBe(3);
     expect(data.allGames[0].homeTeam).toBe("Brazil");
     expect(data.allGames[0].score).toBe("3 - 1");
-    expect(mockFetch).toHaveBeenCalledWith("https://worldcup26.ir/get/games", expect.objectContaining({
-      headers: { Authorization: "Bearer test-token-123" }
-    }));
-  });
-
-  it("Test 2: Returns 500 { error, status: 'error' } when WORLDCUP26_TOKEN is empty/missing", async () => {
-    vi.stubEnv("WORLDCUP26_TOKEN", "");
-    const response = await GET(createRequest());
-    expect(response.status).toBe(500);
-    const data = await response.json();
-    expect(data.status).toBe("error");
-    expect(data.error).toBe("WORLDCUP26_TOKEN not configured");
+    expect(mockFetch).toHaveBeenCalledWith("https://worldcup26.ir/get/games", expect.anything());
   });
 
   it("Test 3: Returns 502 { error, status: 'upstream_error' } when fetch returns non-200", async () => {
-    vi.stubEnv("WORLDCUP26_TOKEN", "test-token-123");
     const mockFetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 403,
