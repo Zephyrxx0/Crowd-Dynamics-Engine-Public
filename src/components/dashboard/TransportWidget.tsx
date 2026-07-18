@@ -90,6 +90,7 @@ export function TransportWidget() {
                 className={`w-2 h-2 rounded-full ${statusColorForUrgency(route.urgency)}`}
                 aria-hidden="true"
               />
+              <span className="sr-only">{route.status}</span>
               <span>
                 {route.name}
                 {route.accessible && (

@@ -129,6 +129,7 @@ export function ScenarioForm() {
   const phases = useFieldArray({ control: form.control, name: "phases" })
   const arrivals = useFieldArray({ control: form.control, name: "arrivals" })
   const mode = form.watch("mode")
+  const { errors } = form.formState
 
   useEffect(() => {
     form.reset(currentInput)
@@ -152,21 +153,38 @@ export function ScenarioForm() {
       zones.fields.map((field, index) => (
         <div key={field.id} className="grid grid-cols-[1fr_1fr_auto] gap-3 py-2.5 items-end" data-testid="zones-row">
           <ScenarioRow label="Zone ID">
-            <Input className="bg-background min-h-10" {...form.register(`zones.${index}.id` as const)} />
+            <Input
+              className="bg-background min-h-10"
+              aria-invalid={errors.zones?.[index]?.id ? "true" : undefined}
+              aria-describedby={errors.zones?.[index]?.id ? `zones-${index}-id-error` : undefined}
+              {...form.register(`zones.${index}.id` as const)}
+            />
+            {errors.zones?.[index]?.id?.message && (
+              <span id={`zones-${index}-id-error`} role="alert" className="text-sm text-destructive">
+                {errors.zones[index]?.id?.message}
+              </span>
+            )}
           </ScenarioRow>
           <ScenarioRow label="Capacity">
             <Input
               type="number"
               className="bg-background min-h-10"
+              aria-invalid={errors.zones?.[index]?.capacity ? "true" : undefined}
+              aria-describedby={errors.zones?.[index]?.capacity ? `zones-${index}-capacity-error` : undefined}
               {...form.register(`zones.${index}.capacity` as const, { valueAsNumber: true })}
             />
+            {errors.zones?.[index]?.capacity?.message && (
+              <span id={`zones-${index}-capacity-error`} role="alert" className="text-sm text-destructive">
+                {errors.zones[index]?.capacity?.message}
+              </span>
+            )}
           </ScenarioRow>
           <Button variant="ghost" size="icon-xs" onClick={() => zones.remove(index)} className="text-muted-foreground hover:text-destructive mb-0.5 transition-[color,transform] duration-150 ease-out active:scale-[0.96]">
             <X className="size-3.5" />
           </Button>
         </div>
       )),
-    [zones.fields, form],
+    [zones.fields, form, errors.zones],
   )
 
   const gateRows = useMemo(
@@ -174,10 +192,30 @@ export function ScenarioForm() {
       gates.fields.map((field, index) => (
         <div key={field.id} className="grid grid-cols-[1fr_1fr_auto] gap-x-3 gap-y-1.5 py-2.5 items-end" data-testid="gates-row">
           <ScenarioRow label="Gate ID">
-            <Input className="bg-background min-h-10" {...form.register(`gates.${index}.id` as const)} />
+            <Input
+              className="bg-background min-h-10"
+              aria-invalid={errors.gates?.[index]?.id ? "true" : undefined}
+              aria-describedby={errors.gates?.[index]?.id ? `gates-${index}-id-error` : undefined}
+              {...form.register(`gates.${index}.id` as const)}
+            />
+            {errors.gates?.[index]?.id?.message && (
+              <span id={`gates-${index}-id-error`} role="alert" className="text-sm text-destructive">
+                {errors.gates[index]?.id?.message}
+              </span>
+            )}
           </ScenarioRow>
           <ScenarioRow label="Zone">
-            <Input className="bg-background min-h-10" {...form.register(`gates.${index}.zoneId` as const)} />
+            <Input
+              className="bg-background min-h-10"
+              aria-invalid={errors.gates?.[index]?.zoneId ? "true" : undefined}
+              aria-describedby={errors.gates?.[index]?.zoneId ? `gates-${index}-zone-error` : undefined}
+              {...form.register(`gates.${index}.zoneId` as const)}
+            />
+            {errors.gates?.[index]?.zoneId?.message && (
+              <span id={`gates-${index}-zone-error`} role="alert" className="text-sm text-destructive">
+                {errors.gates[index]?.zoneId?.message}
+              </span>
+            )}
           </ScenarioRow>
           <Button variant="ghost" size="icon-xs" onClick={() => gates.remove(index)} className="text-muted-foreground hover:text-destructive mb-0.5 row-span-2 self-center transition-[color,transform] duration-150 ease-out active:scale-[0.96]">
             <X className="size-3.5" />
@@ -186,19 +224,33 @@ export function ScenarioForm() {
             <Input
               type="number"
               className="bg-background min-h-10"
+              aria-invalid={errors.gates?.[index]?.throughputPerMin ? "true" : undefined}
+              aria-describedby={errors.gates?.[index]?.throughputPerMin ? `gates-${index}-throughput-error` : undefined}
               {...form.register(`gates.${index}.throughputPerMin` as const, { valueAsNumber: true })}
             />
+            {errors.gates?.[index]?.throughputPerMin?.message && (
+              <span id={`gates-${index}-throughput-error`} role="alert" className="text-sm text-destructive">
+                {errors.gates[index]?.throughputPerMin?.message}
+              </span>
+            )}
           </ScenarioRow>
           <ScenarioRow label="Delay (min)">
             <Input
               type="number"
               className="bg-background min-h-10"
+              aria-invalid={errors.gates?.[index]?.delayMin ? "true" : undefined}
+              aria-describedby={errors.gates?.[index]?.delayMin ? `gates-${index}-delay-error` : undefined}
               {...form.register(`gates.${index}.delayMin` as const, { valueAsNumber: true })}
             />
+            {errors.gates?.[index]?.delayMin?.message && (
+              <span id={`gates-${index}-delay-error`} role="alert" className="text-sm text-destructive">
+                {errors.gates[index]?.delayMin?.message}
+              </span>
+            )}
           </ScenarioRow>
         </div>
       )),
-    [gates.fields, form],
+    [gates.fields, form, errors.gates],
   )
 
   const phaseRows = useMemo(
@@ -206,28 +258,52 @@ export function ScenarioForm() {
       phases.fields.map((field, index) => (
         <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-3 py-2.5 items-end" data-testid="phases-row">
           <ScenarioRow label="Phase ID" className="flex-1">
-            <Input className="bg-background min-h-10" {...form.register(`phases.${index}.id` as const)} />
+            <Input
+              className="bg-background min-h-10"
+              aria-invalid={errors.phases?.[index]?.id ? "true" : undefined}
+              aria-describedby={errors.phases?.[index]?.id ? `phases-${index}-id-error` : undefined}
+              {...form.register(`phases.${index}.id` as const)}
+            />
+            {errors.phases?.[index]?.id?.message && (
+              <span id={`phases-${index}-id-error`} role="alert" className="text-sm text-destructive">
+                {errors.phases[index]?.id?.message}
+              </span>
+            )}
           </ScenarioRow>
           <ScenarioRow label="Order">
             <Input
               type="number"
               className="bg-background min-h-10 w-20"
+              aria-invalid={errors.phases?.[index]?.order ? "true" : undefined}
+              aria-describedby={errors.phases?.[index]?.order ? `phases-${index}-order-error` : undefined}
               {...form.register(`phases.${index}.order` as const, { valueAsNumber: true })}
             />
+            {errors.phases?.[index]?.order?.message && (
+              <span id={`phases-${index}-order-error`} role="alert" className="text-sm text-destructive">
+                {errors.phases[index]?.order?.message}
+              </span>
+            )}
           </ScenarioRow>
           <ScenarioRow label="Duration (min)">
             <Input
               type="number"
               className="bg-background min-h-10"
+              aria-invalid={errors.phases?.[index]?.durationMin ? "true" : undefined}
+              aria-describedby={errors.phases?.[index]?.durationMin ? `phases-${index}-duration-error` : undefined}
               {...form.register(`phases.${index}.durationMin` as const, { valueAsNumber: true })}
             />
+            {errors.phases?.[index]?.durationMin?.message && (
+              <span id={`phases-${index}-duration-error`} role="alert" className="text-sm text-destructive">
+                {errors.phases[index]?.durationMin?.message}
+              </span>
+            )}
           </ScenarioRow>
           <Button variant="ghost" size="icon-xs" onClick={() => phases.remove(index)} className="text-muted-foreground hover:text-destructive mb-0.5 transition-[color,transform] duration-150 ease-out active:scale-[0.96]">
             <X className="size-3.5" />
           </Button>
         </div>
       )),
-    [phases.fields, form],
+    [phases.fields, form, errors.phases],
   )
 
   const arrivalRows = useMemo(
@@ -235,24 +311,51 @@ export function ScenarioForm() {
       arrivals.fields.map((field, index) => (
         <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-3 py-2.5 items-end" data-testid="arrivals-row">
           <ScenarioRow label="Phase" className="flex-1">
-            <Input className="bg-background min-h-10" {...form.register(`arrivals.${index}.phaseId` as const)} />
+            <Input
+              className="bg-background min-h-10"
+              aria-invalid={errors.arrivals?.[index]?.phaseId ? "true" : undefined}
+              aria-describedby={errors.arrivals?.[index]?.phaseId ? `arrivals-${index}-phase-error` : undefined}
+              {...form.register(`arrivals.${index}.phaseId` as const)}
+            />
+            {errors.arrivals?.[index]?.phaseId?.message && (
+              <span id={`arrivals-${index}-phase-error`} role="alert" className="text-sm text-destructive">
+                {errors.arrivals[index]?.phaseId?.message}
+              </span>
+            )}
           </ScenarioRow>
           <ScenarioRow label="Zone" className="flex-1">
-            <Input className="bg-background min-h-10" {...form.register(`arrivals.${index}.zoneId` as const)} />
+            <Input
+              className="bg-background min-h-10"
+              aria-invalid={errors.arrivals?.[index]?.zoneId ? "true" : undefined}
+              aria-describedby={errors.arrivals?.[index]?.zoneId ? `arrivals-${index}-zone-error` : undefined}
+              {...form.register(`arrivals.${index}.zoneId` as const)}
+            />
+            {errors.arrivals?.[index]?.zoneId?.message && (
+              <span id={`arrivals-${index}-zone-error`} role="alert" className="text-sm text-destructive">
+                {errors.arrivals[index]?.zoneId?.message}
+              </span>
+            )}
           </ScenarioRow>
           <ScenarioRow label="Demand">
             <Input
               type="number"
               className="bg-background min-h-10"
+              aria-invalid={errors.arrivals?.[index]?.demandFans ? "true" : undefined}
+              aria-describedby={errors.arrivals?.[index]?.demandFans ? `arrivals-${index}-demand-error` : undefined}
               {...form.register(`arrivals.${index}.demandFans` as const, { valueAsNumber: true })}
             />
+            {errors.arrivals?.[index]?.demandFans?.message && (
+              <span id={`arrivals-${index}-demand-error`} role="alert" className="text-sm text-destructive">
+                {errors.arrivals[index]?.demandFans?.message}
+              </span>
+            )}
           </ScenarioRow>
           <Button variant="ghost" size="icon-xs" onClick={() => arrivals.remove(index)} className="text-muted-foreground hover:text-destructive mb-0.5 transition-[color,transform] duration-150 ease-out active:scale-[0.96]">
             <X className="size-3.5" />
           </Button>
         </div>
       )),
-    [arrivals.fields, form],
+    [arrivals.fields, form, errors.arrivals],
   )
 
   return (

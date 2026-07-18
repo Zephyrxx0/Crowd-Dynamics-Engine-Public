@@ -92,7 +92,8 @@ export function AlertFeed({ isDisconnected }: AlertFeedProps) {
   return (
     <div
       role="region"
-      aria-label="Live AI crowd alerts"
+      aria-label="Live alerts"
+      aria-live={hasCritical ? "assertive" : "polite"}
       className="flex flex-col h-full w-full max-w-5xl mx-auto relative overflow-hidden border border-border bg-background"
     >
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
@@ -119,7 +120,6 @@ export function AlertFeed({ isDisconnected }: AlertFeedProps) {
       <div 
         ref={scrollContainerRef}
         className="flex-1 overflow-y-auto p-4 space-y-3"
-        aria-live={hasCritical ? "assertive" : "polite"}
       >
         {alerts.length === 0 ? (
           <div className="flex items-center justify-center h-32 text-muted-foreground">
@@ -133,6 +133,8 @@ export function AlertFeed({ isDisconnected }: AlertFeedProps) {
             return (
               <div
                 key={alert.id}
+                role="alert"
+                aria-atomic="true"
                 className={cn(
                   "border p-4 flex gap-4 items-start",
                   config.borderColor,

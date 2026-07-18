@@ -67,6 +67,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4 p-4 md:p-6 max-w-5xl mx-auto">
+      <h1 className="sr-only">Crowd Dynamics Dashboard</h1>
       <AlertFeed isDisconnected={isDisconnected} />
       <TransportWidget />
       <SustainabilityPanel />
