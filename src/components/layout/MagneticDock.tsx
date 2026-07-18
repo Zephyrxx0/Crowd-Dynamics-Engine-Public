@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react"
-import { FileText, GitCompareArrows, Home, LayoutDashboard, MessageSquare, SlidersHorizontal } from "lucide-react"
+import { FileText, GitCompareArrows, Home, LayoutDashboard, MessageSquare, SlidersHorizontal, Users } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 
 import { cn } from "@/lib/utils"
@@ -23,6 +23,7 @@ export function MagneticDock() {
       { label: "Compare", target: "/compare", icon: GitCompareArrows },
       { label: "Report", target: "/report", icon: FileText },
       { label: "Dashboard", target: "/dashboard", icon: LayoutDashboard },
+      { label: "Volunteer", target: "/volunteer", icon: Users },
     ],
     []
   )

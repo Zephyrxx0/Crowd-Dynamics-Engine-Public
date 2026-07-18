@@ -6,15 +6,21 @@ import { DemoModeBanner } from "@/components/dashboard/DemoModeBanner";
 import { DemoToggle } from "@/components/dashboard/DemoToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isVolunteerPage = pathname?.includes("/volunteer");
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* Premium dark header with dot grid */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="flex h-14 items-center gap-4 px-4 sm:px-6 relative">
           <Menu className="h-5 w-5 text-muted-foreground" />
-          <h1 className="text-sm font-semibold uppercase tracking-widest text-foreground">Command Center</h1>
+          <h1 className="text-sm font-semibold uppercase tracking-widest text-foreground">
+            {isVolunteerPage ? "Volunteer Portal" : "Command Center"}
+          </h1>
           
           <div className="ml-auto flex items-center gap-4">
             <LanguageSwitcher />
@@ -29,14 +35,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
       <main className="flex-1 px-4 pb-6 md:px-6 mt-4">
-        <div className="space-y-3 mb-6">
-          <MatchBanner />
-          <WeatherCard />
-          <DemoModeBanner />
-          <div className="flex items-center justify-between max-w-5xl mx-auto w-full px-1">
-            <DemoToggle />
+        {!isVolunteerPage && (
+          <div className="space-y-3 mb-6">
+            <MatchBanner />
+            <WeatherCard />
+            <DemoModeBanner />
+            <div className="flex items-center justify-between max-w-5xl mx-auto w-full px-1">
+              <DemoToggle />
+            </div>
           </div>
-        </div>
+        )}
         {children}
       </main>
     </div>
