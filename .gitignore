@@ -117,3 +117,4 @@ Dockerfile
 *.md
 !.planning/
 !.planning/**/*-UI-REVIEW.md
+skills-lock.json
