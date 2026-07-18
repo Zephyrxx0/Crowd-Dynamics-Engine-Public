@@ -15,9 +15,9 @@ const mockInitializeSim = vi.fn();
 
 vi.mock("@/stores/liveStore", () => ({
   liveStore: {
-    subscribe: vi.fn((selector: any, callback: any) => {
-      const isPhase = selector.toString().includes("phase");
-      if (isPhase) {
+    subscribe: vi.fn((callback: any) => {
+      const code = callback.toString();
+      if (code.includes("phase = state.match?.phase")) {
         phaseCallback = callback;
         return unsubPhase;
       } else {
@@ -39,14 +39,14 @@ describe("usePhaseTransitionWatcher", () => {
 
   it("skips first subscription fire for phase", () => {
     renderHook(() => usePhaseTransitionWatcher());
-    phaseCallback("first-half");
+    phaseCallback({ match: { phase: "first-half" } }, { match: { phase: null } });
     expect(mockInitializeSim).not.toHaveBeenCalled();
   });
 
   it("calls applyPhaseTransitionDeltas + initializeSim on first-half -> half-time transition", () => {
     renderHook(() => usePhaseTransitionWatcher());
-    phaseCallback("first-half"); // init
-    phaseCallback("half-time"); // transition
+    phaseCallback({ match: { phase: "first-half" } }, { match: { phase: null } }); // init
+    phaseCallback({ match: { phase: "half-time" } }, { match: { phase: "first-half" } }); // transition
     
     expect(applyPhaseTransitionDeltas).toHaveBeenCalled();
     expect(mockInitializeSim).toHaveBeenCalled();
@@ -54,8 +54,8 @@ describe("usePhaseTransitionWatcher", () => {
 
   it("calls applyPhaseTransitionDeltas on second-half -> full-time transition", () => {
     renderHook(() => usePhaseTransitionWatcher());
-    phaseCallback("second-half");
-    phaseCallback("full-time");
+    phaseCallback({ match: { phase: "second-half" } }, { match: { phase: null } });
+    phaseCallback({ match: { phase: "full-time" } }, { match: { phase: "second-half" } });
     
     expect(applyPhaseTransitionDeltas).toHaveBeenCalled();
     expect(mockInitializeSim).toHaveBeenCalled();
@@ -63,16 +63,16 @@ describe("usePhaseTransitionWatcher", () => {
 
   it("does not trigger on same-phase non-transition", () => {
     renderHook(() => usePhaseTransitionWatcher());
-    phaseCallback("first-half");
-    phaseCallback("first-half");
+    phaseCallback({ match: { phase: "first-half" } }, { match: { phase: null } });
+    phaseCallback({ match: { phase: "first-half" } }, { match: { phase: "first-half" } });
     
     expect(mockInitializeSim).not.toHaveBeenCalled();
   });
 
   it("applies goal deltas when score changes (live mode, no currentDemoEvent)", () => {
     renderHook(() => usePhaseTransitionWatcher());
-    scoreCallback("0 - 0");
-    scoreCallback("1 - 0");
+    scoreCallback({ match: { score: "0 - 0" } }, { match: { score: null } });
+    scoreCallback({ match: { score: "1 - 0" } }, { match: { score: "0 - 0" } });
     
     expect(applyPhaseTransitionDeltas).toHaveBeenCalledWith(expect.anything(), "goal", [
       { zoneId: "north", deltaPercent: 20 },
@@ -84,8 +84,8 @@ describe("usePhaseTransitionWatcher", () => {
 
   it("skips when currentDemoEvent has zoneDeltas", () => {
     renderHook(() => usePhaseTransitionWatcher({ minute: 23, phase: "first-half", score: "1 - 0", eventType: "goal", zoneDeltas: [{zoneId: "north", deltaPercent: 20}] }));
-    scoreCallback("0 - 0");
-    scoreCallback("1 - 0");
+    scoreCallback({ match: { score: "0 - 0" } }, { match: { score: null } });
+    scoreCallback({ match: { score: "1 - 0" } }, { match: { score: "0 - 0" } });
     
     expect(applyPhaseTransitionDeltas).not.toHaveBeenCalled();
   });
