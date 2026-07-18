@@ -101,11 +101,9 @@ Plans:
   4. Conversation history is maintained within session (capped at 10 messages)
    5. Quick question chips are available for one-tap demo queries
 
-<<<<<<< Updated upstream
-**Plans**: TBD
+**Plans**: 4 plans
 **UI hint**: yes
-=======
-**Plans**: 4 plansPlans:
+Plans:
 **Wave 1**
 
 - [x] 16-01-PLAN.md — Foundation: types, store (FIFO-10), prompt builder
@@ -118,8 +116,6 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 
 - [x] 16-04-PLAN.md — UI: ChatMessage, ChatInterface, fan layout + page
-
->>>>>>> Stashed changes
 
 ### Phase 17: Weather Integration
 
@@ -167,14 +163,28 @@ Plans:
 
 ### Phase 19: Audit Remediation and Codebase Hardening
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Execute audit-driven codebase hardening across 12 THERMO_NUCLEAR findings and 20+ feature decisions — usePoller extraction, i18n expansion (10 languages), AI endpoint creation, security fix (remove client-side Gemini key), code quality fixes (type holes, renames, icons, sync effects), dynamic zone data wiring, sustainability/volunteer/transport features, nav→heatmap interaction, 5 test files, and 5 accessibility improvements.
+**Requirements**: SEC-01, CODEQ-01, FEAT-01, TEST-01, A11Y-01
 **Depends on:** Phase 18
-**Plans:** 0 plans
+**Plans:** 4 plans
 
 Plans:
 
-- [ ] TBD (run /gsd-plan-phase 19 to break down)
+**Wave 1** *(parallel, no dependencies)*
+
+- [ ] 19-01-PLAN.md — Foundation: usePoller<T> extraction, i18n expansion (7 new languages), AI sustainability/transport POST routes, weather city config, highlightedZone store slice
+
+**Wave 2** *(blocked on Wave 1 — uses usePoller)*
+
+- [ ] 19-02-PLAN.md — Code Quality: useAlertStream ref-match fix, StadiumSim delete, cross-store coupling fix, resolvePhaseEvent extraction + /api/report server route
+
+**Wave 3** *(blocked on Wave 2 — /api/report must exist for security fix)*
+
+- [ ] 19-03-PLAN.md — Security & UX: client-side Gemini key removal, type hole fix, v1ZoneData rename, icon swap, sync effect removal, SustainabilityPanel, volunteer dynamism, nav→heatmap wiring, expanded TransportWidget
+
+**Wave 4** *(blocked on Wave 3 — fixes must be in place before tests)*
+
+- [ ] 19-04-PLAN.md — Testing & Accessibility: 5 test files (usePoller, useAlertStream, phaseTransitions, i18nSlice, generateRiskReport) + 5 a11y fixes (skip-to-content, landmarks, aria-live, aria-invalid, reduced-motion)
 
 ---
 
@@ -295,7 +305,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-v2.0 phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
+v2.0 phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18 → 19
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -314,10 +324,7 @@ v2.0 phases execute in numeric order: 13 → 14 → 15 → 16 → 17 → 18
 | 13. Foundation & Architecture Decision | v2.0 | 3/3 | Complete   | 2026-07-13 |
 | 14. Server Runtime + Match Polling | v2.0 | 4/4 | Complete   | 2026-07-14 |
 | 15. AI Alert Stream | v2.0 | 2/3 | In Progress|  |
-<<<<<<< Updated upstream
-| 16. Fan Chatbot | v2.0 | 0/0 | Not started | - |
-=======
 | 16. Fan Chatbot | v2.0 | 4/4 | Complete   | 2026-07-15 |
->>>>>>> Stashed changes
 | 17. Weather Integration | v2.0 | 3/3 | Complete   | 2026-07-15 |
 | 18. Demo Mode + Integration Wiring | v2.0 | 0/0 | Not started | - |
+| 19. Audit Remediation and Codebase Hardening | v2.0 | 0/4 | Planning Complete | - |
