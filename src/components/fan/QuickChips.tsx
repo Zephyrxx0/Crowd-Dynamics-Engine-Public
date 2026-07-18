@@ -5,6 +5,9 @@ const QUICK_QUESTIONS = [
   "Best exit after the match?",
   "Where's the nearest concession?",
   "How crowded is my section?",
+  "Is there a wheelchair-accessible route?",
+  "Where is the accessible drop-off point?",
+  "Which gate has the shortest wait time?",
 ] as const;
 
 interface QuickChipsProps {

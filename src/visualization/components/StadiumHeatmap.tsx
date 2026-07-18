@@ -9,6 +9,7 @@ import {
 } from "@/visualization/contracts/motionPolicy"
 import { riskBandFromRatio, RISK_LEGEND } from "@/visualization/contracts/riskEncoding"
 import { STADIUM_ZONE_POLYGONS } from "@/visualization/contracts/stadiumPolygons"
+import { useLiveStore } from "@/stores/liveStore"
 
 type StadiumHeatmapProps = {
   latestZoneRisk: Record<string, LatestZoneRisk>
@@ -21,6 +22,7 @@ function colorForBand(band: "green" | "amber" | "red" | "critical") {
 }
 
 export function StadiumHeatmap({ latestZoneRisk }: StadiumHeatmapProps) {
+  const highlightedZone = useLiveStore((s) => s.highlightedZone)
   const polygonRefs = useRef(new Map<string, SVGPolygonElement>())
   const reducedMotion = PREFERS_REDUCED_MOTION()
   const polygonZoneIds = Object.keys(STADIUM_ZONE_POLYGONS)
@@ -54,6 +56,25 @@ export function StadiumHeatmap({ latestZoneRisk }: StadiumHeatmapProps) {
       })
     }
   }, [latestZoneRisk, polygonZoneIds, reducedMotion])
+
+  useEffect(() => {
+    if (!highlightedZone || reducedMotion) {
+      return
+    }
+
+    const node = polygonRefs.current.get(highlightedZone)
+    if (!node) {
+      return
+    }
+
+    animate(node, {
+      opacity: [1, 0.55, 1],
+      scale: [1, 1.08, 1],
+      duration: 800,
+      loop: 3,
+      ease: "inOutQuad",
+    })
+  }, [highlightedZone, reducedMotion])
 
   const [showAccessibility, setShowAccessibility] = useState(false);
 
@@ -104,6 +125,7 @@ export function StadiumHeatmap({ latestZoneRisk }: StadiumHeatmapProps) {
                 data-testid={`heatmap-zone-${zoneId}`}
                 data-zone-id={zoneId}
                 data-risk-band="no-data"
+                className={zoneId === highlightedZone ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.9)]" : undefined}
                 ref={(node) => {
                   if (node) {
                     polygonRefs.current.set(zoneId, node)
@@ -126,6 +148,7 @@ export function StadiumHeatmap({ latestZoneRisk }: StadiumHeatmapProps) {
               data-testid={`heatmap-zone-${zoneId}`}
               data-zone-id={zoneId}
               data-risk-band={riskBand}
+              className={zoneId === highlightedZone ? "drop-shadow-[0_0_12px_rgba(59,130,246,0.9)]" : undefined}
               ref={(node) => {
                 if (node) {
                   polygonRefs.current.set(zoneId, node)

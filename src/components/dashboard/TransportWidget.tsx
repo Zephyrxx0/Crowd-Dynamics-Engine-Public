@@ -15,12 +15,19 @@ function estimateCO2Saved(totalFans: number): number {
   return Math.round(totalFans * transitShare * (carCO2PerFan - transitCO2PerFan));
 }
 
-// Simulated real-time transport statuses (would come from a live transit API in production)
 const TRANSPORT_ROUTES = [
-  { name: "Metro Line A", accessible: false, statusColor: "bg-emerald-500", status: "On Time (5m)" },
-  { name: "Bus Shuttle North", accessible: false, statusColor: "bg-amber-500", status: "Delayed (12m)" },
-  { name: "Accessible Van Transfer", accessible: true, statusColor: "bg-emerald-500", status: "Standby" },
+  { name: "Metro Line A", accessible: false, status: "On Time", urgency: "low" },
+  { name: "Bus Shuttle North", accessible: false, status: "Delayed", urgency: "medium" },
+  { name: "Accessible Van Transfer", accessible: true, status: "Standby", urgency: "low" },
+  { name: "Park & Ride Express", accessible: false, status: "On Time", urgency: "low" },
+  { name: "Stadium Shuttle", accessible: true, status: "On Time", urgency: "low" },
 ] as const;
+
+function statusColorForUrgency(urgency: string) {
+  if (urgency === "high") return "bg-red-500";
+  if (urgency === "medium") return "bg-amber-500";
+  return "bg-emerald-500";
+}
 
 export function TransportWidget() {
   const t = useLiveStore((s) => s.t);
@@ -36,6 +43,23 @@ export function TransportWidget() {
     }
     // Fall back to a conservative baseline (normal preset ~1800 fans across entry phase)
     return estimateCO2Saved(1800);
+  }, [latestSimulationOutput]);
+
+  const routes = useMemo(() => {
+    const hasHighOccupancy =
+      latestSimulationOutput?.phaseZoneMatrix.some((row) => row.occupancyRatio >= 0.8) ?? false;
+
+    return TRANSPORT_ROUTES.map((route) => {
+      if (!hasHighOccupancy) {
+        return route;
+      }
+
+      if (route.accessible) {
+        return { ...route, status: "Surge Active", urgency: "high" };
+      }
+
+      return { ...route, status: "Delayed", urgency: "high" };
+    });
   }, [latestSimulationOutput]);
 
   return (
@@ -54,15 +78,16 @@ export function TransportWidget() {
       </div>
 
       <div className="space-y-2 text-sm text-muted-foreground" role="list" aria-label="Transport routes">
-        {TRANSPORT_ROUTES.map((route) => (
+        {routes.map((route) => (
           <div
             key={route.name}
             className="flex justify-between p-2 bg-muted/50 rounded"
             role="listitem"
+            aria-label={`${route.name}: ${route.status}`}
           >
             <div className="flex items-center gap-2">
               <span
-                className={`w-2 h-2 rounded-full ${route.statusColor}`}
+                className={`w-2 h-2 rounded-full ${statusColorForUrgency(route.urgency)}`}
                 aria-hidden="true"
               />
               <span>
@@ -72,7 +97,10 @@ export function TransportWidget() {
                 )}
               </span>
             </div>
-            <span className="text-foreground font-medium">{route.status}</span>
+            <span className="text-foreground font-medium">
+              {route.status}
+              <span className="sr-only"> status</span>
+            </span>
           </div>
         ))}
       </div>

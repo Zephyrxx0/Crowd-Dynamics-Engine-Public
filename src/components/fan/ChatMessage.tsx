@@ -1,6 +1,8 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { liveStore } from "@/stores/liveStore";
 import type { ChatMessage as ChatMessageType } from "@/types/chat";
+import { Map } from "lucide-react";
 import { StreamingContent } from "./StreamingContent";
 
 interface ChatMessageProps {
@@ -20,6 +22,7 @@ function TypingIndicator() {
 
 export function ChatMessage({ message, isStreaming = false }: ChatMessageProps) {
   const isUser = message.role === "user";
+  const mapTarget = message.structuredData?.zoneInfo?.zoneId ?? message.structuredData?.suggestedGate ?? null;
 
   return (
     <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")} aria-live={isStreaming ? "assertive" : undefined}>
@@ -42,6 +45,19 @@ export function ChatMessage({ message, isStreaming = false }: ChatMessageProps) 
               <span className="ml-1 inline-block h-[14px] w-[2px] animate-pulse bg-current opacity-60 align-middle" />
             )}
           </p>
+        )}
+        {mapTarget && !isUser && (
+          <button
+            type="button"
+            onClick={() => {
+              liveStore.getState().setHighlightedZone(mapTarget);
+              document.querySelector('[data-testid="stadium-heatmap"]')?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="mt-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:text-primary/80"
+          >
+            <Map className="h-3 w-3" />
+            View on map
+          </button>
         )}
       </div>
     </div>
