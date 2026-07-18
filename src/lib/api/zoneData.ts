@@ -1,29 +1,32 @@
 import { presets } from "@/simulation/presets";
 import { simulateDeterministic } from "@/simulation/core/simulateDeterministic";
+import type { SimulationOutput } from "@/simulation/contracts/output.schema";
 import type { MatchState } from "@/types/match";
 
 type ZoneEntry = { id: string; name: string; occupancy: number; capacity: number; occupancyRatio: number };
+
+export const ZONE_FRIENDLY_NAMES: Record<string, string> = {
+  north: "North Stand",
+  south: "South Stand",
+  east: "East Concourse",
+  west: "West Concourse",
+  "zone-c": "Zone C — Gate Cluster",
+};
 
 // Module-level cache — the deterministic simulation output is pure/stable for a given preset,
 // so we only need to compute it once per server process rather than on every API request.
 let _zoneDataCache: ZoneEntry[] | null = null;
 
-export function getZoneData(): ZoneEntry[] {
-  if (_zoneDataCache) return _zoneDataCache;
-
-  const input = presets.normal;
-  const output = simulateDeterministic(input);
-  const zoneCapacities = new Map(input.zones.map((z) => [z.id, z.capacity]));
-
-  _zoneDataCache = Array.from(
+function deriveZoneEntries(output: SimulationOutput, capacities: Map<string, number>): ZoneEntry[] {
+  return Array.from(
     output.phaseZoneMatrix
       .reduce((acc, row) => {
         if (!acc.has(row.zoneId) || row.occupancyFans > acc.get(row.zoneId)!.occupancy) {
           acc.set(row.zoneId, {
             id: row.zoneId,
-            name: row.zoneId,
+            name: ZONE_FRIENDLY_NAMES[row.zoneId] ?? row.zoneId,
             occupancy: row.occupancyFans,
-            capacity: zoneCapacities.get(row.zoneId) ?? 0,
+            capacity: capacities.get(row.zoneId) ?? Math.max(row.occupancyFans, 1),
             occupancyRatio: row.occupancyRatio,
           });
         }
@@ -31,7 +34,16 @@ export function getZoneData(): ZoneEntry[] {
       }, new Map<string, ZoneEntry>())
       .values()
   );
+}
 
+export function getZoneData(simOutput?: SimulationOutput): ZoneEntry[] {
+  const input = presets.normal;
+  const zoneCapacities = new Map(input.zones.map((z) => [z.id, z.capacity]));
+
+  if (simOutput) return deriveZoneEntries(simOutput, zoneCapacities);
+  if (_zoneDataCache) return _zoneDataCache;
+
+  _zoneDataCache = deriveZoneEntries(simulateDeterministic(input), zoneCapacities);
   return _zoneDataCache;
 }
 
