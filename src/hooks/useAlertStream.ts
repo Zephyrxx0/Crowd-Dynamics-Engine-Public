@@ -16,6 +16,7 @@ export function useAlertStream() {
   const sourceRef = useRef<EventSource | null>(null);
   const retryRef = useRef(RECONNECT_BASE);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const matchRef = useRef(match);
 
   const clearTimers = useCallback(() => {
     if (timeoutRef.current !== null) {
@@ -24,6 +25,10 @@ export function useAlertStream() {
     }
   }, []);
 
+  useEffect(() => {
+    matchRef.current = match;
+  }, [match]);
+
   const connect = useCallback(() => {
     clearTimers();
     if (sourceRef.current) {
@@ -31,9 +36,7 @@ export function useAlertStream() {
       sourceRef.current = null;
     }
 
-    const minute = match?.minute ?? 0;
-    const phase = match?.phase ?? "first-half";
-    const score = match?.score ?? "0-0";
+    const { minute = 0, phase = "first-half", score = "0-0" } = matchRef.current ?? {};
     const url = `/api/alert?minute=${minute}&phase=${phase}&score=${score}`;
 
     const source = new EventSource(url);
@@ -71,7 +74,7 @@ export function useAlertStream() {
     };
 
     sourceRef.current = source;
-  }, [addAlert, match, clearTimers]);
+  }, [addAlert, clearTimers]);
 
   useEffect(() => {
     connect();
