@@ -159,10 +159,22 @@ Plans:
 
 **Plans**: 2 plans
 Plans:
+
 - [ ] 18-01-PLAN.md — Demo Mode Content: types, API route, phase transition deltas, demo sequence hook, demo UI components + tests
 - [ ] 18-02-PLAN.md — Integration Wiring: phase transition watcher, dashboard page/layout orchestration, MagneticDock navigation tabs
 
 **UI hint**: yes
+
+### Phase 19: Audit Remediation and Codebase Hardening
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 18
+**Plans:** 0 plans
+
+Plans:
+
+- [ ] TBD (run /gsd-plan-phase 19 to break down)
 
 ---
 
