@@ -8,6 +8,11 @@ import { presets } from "../../src/simulation/presets"
 import { StadiumSim } from "../../src/simulation/adapters/StadiumSim"
 import { simulationOutputFixture } from "./fixtures/simulationOutput"
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+  usePathname: () => "/",
+}))
+
 describe("ScenarioForm run behavior", () => {
   afterEach(() => {
     cleanup()

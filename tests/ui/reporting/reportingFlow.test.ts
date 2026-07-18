@@ -53,6 +53,7 @@ describe("reporting flow", () => {
     useRiskReportStore.getState().setGenerator(async () => aiResponse)
 
     useScenarioStore.getState().setLatestSimulationOutput(simulationOutputFixture)
+    useRiskReportStore.getState().generateFromSimulation(simulationOutputFixture)
 
     await waitFor(() => {
       expect(useRiskReportStore.getState().status).toBe("success")
@@ -67,6 +68,7 @@ describe("reporting flow", () => {
     })
 
     useScenarioStore.getState().setLatestSimulationOutput(simulationOutputFixture)
+    useRiskReportStore.getState().generateFromSimulation(simulationOutputFixture)
 
     await waitFor(() => {
       expect(useRiskReportStore.getState().status).toBe("fallback")
@@ -87,6 +89,7 @@ describe("reporting flow", () => {
     })
 
     useScenarioStore.getState().setLatestSimulationOutput(simulationOutputFixture)
+    useRiskReportStore.getState().generateFromSimulation(simulationOutputFixture)
 
     await waitFor(() => {
       expect(useRiskReportStore.getState().status).toBe("fallback")

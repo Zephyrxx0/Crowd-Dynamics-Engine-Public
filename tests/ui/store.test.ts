@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 
 import { presets } from "../../src/simulation/presets"
 import { simulationOutputFixture } from "./fixtures/simulationOutput"
@@ -8,6 +8,10 @@ import {
 } from "../../src/hooks/useScenarioStore"
 
 describe("useScenarioStore", () => {
+  beforeEach(() => {
+    useScenarioStore.setState({ latestSimulationOutput: null })
+  })
+
   it("applies presets to current input", () => {
     useScenarioStore.getState().applyPreset("rush")
 
