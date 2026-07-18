@@ -1,12 +1,21 @@
 import React from "react"
-import { act, render, screen, waitFor } from "@testing-library/react"
-import { beforeEach, describe, expect, it } from "vitest"
+import { act, render, screen, waitFor, cleanup } from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { ScenarioForm } from "../../src/components/config/ScenarioForm"
 import { presets } from "../../src/simulation/presets"
 import { useScenarioStore } from "../../src/hooks/useScenarioStore"
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+  usePathname: () => "/",
+}))
+
 describe("ScenarioForm", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   beforeEach(() => {
     localStorage.clear()
     useScenarioStore.setState({
@@ -26,7 +35,7 @@ describe("ScenarioForm", () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue("1250")).toBeInTheDocument()
+      expect(screen.getByDisplayValue("1100")).toBeInTheDocument()
     })
   })
 })

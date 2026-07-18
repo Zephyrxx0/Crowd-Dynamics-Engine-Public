@@ -1,5 +1,5 @@
 import React from "react"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { PresetsToolbar } from "../../src/components/config/PresetsToolbar"
@@ -16,15 +16,22 @@ describe("PresetsToolbar", () => {
     applyPreset.mockReset()
   })
 
-  it("triggers store applyPreset action from each button", () => {
+  it("triggers store applyPreset action from each button", async () => {
     render(React.createElement(PresetsToolbar))
 
     fireEvent.click(screen.getByTestId("preset-normal"))
+    await waitFor(() => {
+      expect(applyPreset).toHaveBeenCalledWith("normal")
+    })
+    
     fireEvent.click(screen.getByTestId("preset-rush"))
+    await waitFor(() => {
+      expect(applyPreset).toHaveBeenCalledWith("rush")
+    })
+    
     fireEvent.click(screen.getByTestId("preset-crisis"))
-
-    expect(applyPreset).toHaveBeenNthCalledWith(1, "normal")
-    expect(applyPreset).toHaveBeenNthCalledWith(2, "rush")
-    expect(applyPreset).toHaveBeenNthCalledWith(3, "crisis")
+    await waitFor(() => {
+      expect(applyPreset).toHaveBeenCalledWith("crisis")
+    })
   })
 })

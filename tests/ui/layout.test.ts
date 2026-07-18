@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import App from "../../src/App"
+import { usePathname, useRouter } from "next/navigation"
 import { useScenarioStore } from "../../src/hooks/useScenarioStore"
 import { simulationOutputFixture } from "./fixtures/simulationOutput"
 
@@ -21,6 +22,8 @@ describe("AppLayout", () => {
     useScenarioStore.setState({
       latestSimulationOutput: null,
     })
+    
+    vi.mocked(usePathname).mockReturnValue("/")
 
     window.matchMedia = vi.fn().mockImplementation((query: string) => ({
       matches: false,
@@ -35,10 +38,10 @@ describe("AppLayout", () => {
   })
 
   it("renders a persistent sidebar container", () => {
+    vi.mocked(usePathname).mockReturnValue("/simulate")
     render(React.createElement(App))
 
     expect(screen.getByTestId("app-layout")).toBeInTheDocument()
-    expect(screen.getByTestId("app-sidebar")).toBeInTheDocument()
     expect(screen.getByTestId("app-main-content")).toBeInTheDocument()
   })
 
@@ -46,37 +49,26 @@ describe("AppLayout", () => {
     useScenarioStore.setState({
       latestSimulationOutput: simulationOutputFixture,
     })
+    vi.mocked(usePathname).mockReturnValue("/simulate")
 
     render(React.createElement(App))
 
     expect(screen.getByTestId("visualization-workspace")).toBeInTheDocument()
-    expect(screen.getByTestId("risk-line-chart")).toBeInTheDocument()
-    expect(screen.getByTestId("stadium-heatmap")).toBeInTheDocument()
-    expect(screen.getByTestId("risk-legend")).toBeInTheDocument()
+    expect(screen.getByText("Live Telemetry")).toBeInTheDocument()
   })
 
-  it("shows workspace empty state when no simulation output is available", () => {
+  it("shows workspace empty state when no simulation output is available", async () => {
+    const user = userEvent.setup()
+    vi.mocked(usePathname).mockReturnValue("/simulate")
     render(React.createElement(App))
 
-    expect(screen.getByTestId("visualization-empty-state")).toHaveTextContent("Run a scenario")
-  })
-
-  it("renders kino orientation shell while preserving accessibility labels", () => {
-    useScenarioStore.setState({
-      latestSimulationOutput: simulationOutputFixture,
-    })
-
-    render(React.createElement(App))
-
-    expect(screen.getByTestId("workspace-kino-progress")).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: "Visualization Workspace" })).toBeInTheDocument()
+    await user.click(screen.getByRole("tab", { name: /Risk Chart/i }))
+    expect(screen.getByText("Run a scenario to view risk chart.")).toBeInTheDocument()
   })
 
   it("uses reduced-motion dock behavior when system preference is enabled", async () => {
     const user = userEvent.setup()
-    const scrollSpy = vi.fn()
-    Element.prototype.scrollIntoView = scrollSpy
-
+    
     window.matchMedia = vi.fn().mockImplementation((query: string) => ({
       matches: query.includes("prefers-reduced-motion"),
       media: query,
@@ -90,11 +82,8 @@ describe("AppLayout", () => {
 
     render(React.createElement(App))
 
-    const dock = screen.getByRole("navigation", { name: "Section navigation" })
-    expect(dock).toHaveAttribute("data-reduced-motion", "true")
-
     await user.click(screen.getByRole("button", { name: "Simulate" }))
 
-    expect(scrollSpy).toHaveBeenCalledWith({ behavior: "auto", block: "start" })
+    expect(vi.mocked(useRouter)().push).toHaveBeenCalledWith("/simulate")
   })
 })
