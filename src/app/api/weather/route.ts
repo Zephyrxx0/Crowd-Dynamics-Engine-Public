@@ -14,6 +14,14 @@ const STADIUM_CITY_MAP: Record<string, string> = {
 
 const DEFAULT_CITY = "New York,US";
 
+function getStadiumParam(request: NextRequest) {
+  if ("nextUrl" in request && request.nextUrl) {
+    return request.nextUrl.searchParams.get("stadium") ?? "";
+  }
+
+  return new URL(request.url).searchParams.get("stadium") ?? "";
+}
+
 export async function GET(request: NextRequest) {
   const apiKey = process.env.OWM_API_KEY;
   if (!apiKey) {
@@ -24,7 +32,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const stadium = request.nextUrl.searchParams.get("stadium") ?? "";
+    const stadium = getStadiumParam(request);
     const city = STADIUM_CITY_MAP[stadium] ?? DEFAULT_CITY;
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`,

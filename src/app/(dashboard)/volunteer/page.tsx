@@ -7,10 +7,16 @@ import { useLiveStore } from "@/stores/liveStore";
 import { ClipboardList } from "lucide-react";
 import { useMemo } from "react";
 
+function formatGateLabel(zoneId: string) {
+  const suffix = zoneId.replace(/^zone-/, "").toUpperCase();
+  return suffix ? `Gate ${suffix}` : `Gate ${zoneId.toUpperCase()}`;
+}
+
 export default function VolunteerPage() {
   const alerts = useLiveStore((s) => s.alerts);
   const criticalAlert = alerts.find((alert) => alert.severity === "critical");
   const alertZone = criticalAlert?.zoneId ?? "zone-c";
+  const gateLabel = formatGateLabel(alertZone);
   const rosterNumber = useMemo(() => Math.floor(Math.random() * 100) + 1, []);
   const currentTask = criticalAlert
     ? `Zone ${alertZone.toUpperCase()} alert: ${criticalAlert.message}`
@@ -24,7 +30,7 @@ export default function VolunteerPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold tracking-tight">Volunteer Portal</h1>
-          <p className="text-sm text-muted-foreground">Gate {alertZone.toUpperCase()} • Duty Roster #{rosterNumber}</p>
+          <p className="text-sm text-muted-foreground">{gateLabel} • Duty Roster #{rosterNumber}</p>
         </div>
       </div>
 
