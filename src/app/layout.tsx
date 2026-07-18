@@ -8,9 +8,22 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: {
     template: 'Flux | %s',
-    default: 'Flux',
+    default: 'Flux — Stadium Intelligence for FIFA World Cup 2026',
   },
-  description: "Scenario-driven crowd risk simulation and planning",
+  description:
+    "GenAI-powered crowd dynamics engine for FIFA World Cup 2026: real-time crowd management, " +
+    "fan navigation, accessibility routing, transport optimization, sustainability intelligence, " +
+    "multilingual AI assistant, and operational decision support.",
+  keywords: [
+    "FIFA World Cup 2026",
+    "crowd management",
+    "stadium operations",
+    "generative AI",
+    "fan experience",
+    "accessibility",
+    "sustainability",
+    "multilingual",
+  ],
   icons: {
     icon: "/favicon.svg",
   },

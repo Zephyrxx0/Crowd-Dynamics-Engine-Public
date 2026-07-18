@@ -4,6 +4,7 @@ import {
   WorldCup26GamesSchema,
   mapGameToMatchState,
   findLiveMatch,
+  findNextUpcoming,
 } from "@/lib/api/worldcup26";
 
 // worldcup26.ir is a free public API — no token required for read access.
@@ -39,7 +40,6 @@ export async function GET(_request: NextRequest) {
     const liveMatchGame = findLiveMatch(games);
     const match = liveMatchGame ? mapGameToMatchState(liveMatchGame) : null;
     
-    const { findNextUpcoming } = await import("@/lib/api/worldcup26");
     const upcomingGame = findNextUpcoming(games);
     const upcomingMatch = upcomingGame ? {
       homeTeam: upcomingGame.home_team_name_en ?? upcomingGame.home_team_label ?? "TBD",

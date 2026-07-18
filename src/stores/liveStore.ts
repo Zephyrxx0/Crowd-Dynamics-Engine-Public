@@ -8,8 +8,16 @@ import { createAlertSlice, type AlertSlice } from "./slices/alertSlice";
 import { createChatSlice, type ChatSlice } from "./slices/chatSlice";
 import { createDemoSlice, type DemoSlice } from "./slices/demoSlice";
 import { createI18nSlice, type I18nSlice } from "./slices/i18nSlice";
+import { createHighlightSlice, type HighlightSlice } from "./slices/highlightSlice";
 
-export type LiveStore = SimSlice & MatchSlice & WeatherSlice & AlertSlice & ChatSlice & DemoSlice & I18nSlice;
+export type LiveStore = SimSlice &
+  MatchSlice &
+  WeatherSlice &
+  AlertSlice &
+  ChatSlice &
+  DemoSlice &
+  I18nSlice &
+  HighlightSlice;
 
 export const liveStore = createStore<LiveStore>()((...a) => ({
   ...createSimSlice(...a),
@@ -19,6 +27,7 @@ export const liveStore = createStore<LiveStore>()((...a) => ({
   ...createChatSlice(...a),
   ...createDemoSlice(...a),
   ...createI18nSlice(...a),
+  ...createHighlightSlice(...a),
 }));
 
 export function useLiveStore<T>(selector: (state: LiveStore) => T): T {

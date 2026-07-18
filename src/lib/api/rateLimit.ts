@@ -3,6 +3,8 @@ interface TokenBucket {
   lastRefill: number;
 }
 
+// Note: this bucket resets on serverless cold start — per-process limit only.
+// For production with multiple instances, replace with Redis-backed rate limiter (e.g., @upstash/ratelimit).
 const buckets = new Map<string, TokenBucket>();
 
 export function rateLimit(ip: string, limit = 10, windowMs = 60000): boolean {

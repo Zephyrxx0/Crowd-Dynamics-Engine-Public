@@ -2,7 +2,19 @@ import { type NextRequest } from "next/server";
 import { mapOwmResponse, OWMResponseSchema } from "@/lib/api/weather";
 import { WeatherDataSchema } from "@/types/weather";
 
-export async function GET(_request: NextRequest) {
+const STADIUM_CITY_MAP: Record<string, string> = {
+  metlife: "East Rutherford,US",
+  sofi: "Inglewood,US",
+  atat: "Arlington,US",
+  bcplace: "Vancouver,CA",
+  bmogfield: "Toronto,CA",
+  estadiocuartel: "Guadalajara,MX",
+  azteca: "Mexico City,MX",
+};
+
+const DEFAULT_CITY = "New York,US";
+
+export async function GET(request: NextRequest) {
   const apiKey = process.env.OWM_API_KEY;
   if (!apiKey) {
     return Response.json(
@@ -12,8 +24,10 @@ export async function GET(_request: NextRequest) {
   }
 
   try {
+    const stadium = request.nextUrl.searchParams.get("stadium") ?? "";
+    const city = STADIUM_CITY_MAP[stadium] ?? DEFAULT_CITY;
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=New%20York,US&units=metric&appid=${apiKey}`,
+      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`,
       { signal: AbortSignal.timeout(10_000) }
     );
 
