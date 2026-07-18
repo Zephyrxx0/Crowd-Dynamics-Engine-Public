@@ -87,6 +87,8 @@ export function AlertFeed({ isDisconnected }: AlertFeedProps) {
     setShowNewAlertsChip(false);
   };
 
+  const hasCritical = alerts.some((a) => a.severity === "critical");
+
   return (
     <div
       role="region"
@@ -117,7 +119,7 @@ export function AlertFeed({ isDisconnected }: AlertFeedProps) {
       <div 
         ref={scrollContainerRef}
         className="flex-1 overflow-y-auto p-4 space-y-3"
-        aria-live="polite"
+        aria-live={hasCritical ? "assertive" : "polite"}
       >
         {alerts.length === 0 ? (
           <div className="flex items-center justify-center h-32 text-muted-foreground">
