@@ -1,47 +1,23 @@
 import { NextRequest } from "next/server";
 import { streamGeminiResponse, validateAlertOutput, GeminiFetchError, GeminiRateLimitError } from "@/lib/ai/gemini";
 import { buildAlertPrompt } from "@/app/api/alert/prompts";
-import { presets } from "@/simulation/presets";
-import { simulateDeterministic } from "@/simulation/core/simulateDeterministic";
+import { getZoneData, extractMatchState } from "@/lib/api/zoneData";
 import { MatchState } from "@/types/match";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-function getZoneData() {
-  const input = presets.normal;
-  const output = simulateDeterministic(input);
-  const zoneCapacities = new Map(input.zones.map(z => [z.id, z.capacity]));
-  
-  return Array.from(
-    output.phaseZoneMatrix.reduce((acc, row) => {
-      if (!acc.has(row.zoneId) || row.occupancyFans > acc.get(row.zoneId)!.occupancy) {
-        acc.set(row.zoneId, {
-          id: row.zoneId,
-          name: row.zoneId,
-          occupancy: row.occupancyFans,
-          capacity: zoneCapacities.get(row.zoneId) ?? 0,
-          occupancyRatio: row.occupancyRatio,
-        });
-      }
-      return acc;
-    }, new Map<string, { id: string; name: string; occupancy: number; capacity: number; occupancyRatio: number }>())
-    .values()
-  );
-}
-
-function extractMatchState(searchParams: URLSearchParams): MatchState {
-  const minuteParam = searchParams.get("minute");
-  return {
-    minute: minuteParam ? parseInt(minuteParam, 10) : null,
-    phase: (searchParams.get("phase") as MatchState["phase"]) ?? "first-half",
-    score: searchParams.get("score") ?? "0-0",
-    homeTeam: searchParams.get("homeTeam") ?? "Home",
-    awayTeam: searchParams.get("awayTeam") ?? "Away",
-  };
-}
+import { rateLimit } from "@/lib/api/rateLimit";
 
 export async function GET(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+  if (!rateLimit(ip, 30, 60000)) {
+    return new Response(JSON.stringify({ error: "Too many requests" }), {
+      status: 429,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
   const encoder = new TextEncoder();
   const matchState = extractMatchState(request.nextUrl.searchParams);
   const zoneData = getZoneData();

@@ -1,47 +1,12 @@
 import { NextRequest } from "next/server";
 import { streamGeminiResponse, GeminiFetchError, GeminiRateLimitError } from "@/lib/ai/gemini";
 import { buildChatPrompt } from "@/app/api/chat/prompts";
-import { presets } from "@/simulation/presets";
-import { simulateDeterministic } from "@/simulation/core/simulateDeterministic";
+import { getZoneData, extractMatchState } from "@/lib/api/zoneData";
 import type { MatchState } from "@/types/match";
 import { ChatRequestSchema, ChatResponseSchema, type ChatResponse } from "@/types/chat";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
-
-function getZoneData() {
-  const input = presets.normal;
-  const output = simulateDeterministic(input);
-  const zoneCapacities = new Map(input.zones.map((z) => [z.id, z.capacity]));
-
-  return Array.from(
-    output.phaseZoneMatrix
-      .reduce((acc, row) => {
-        if (!acc.has(row.zoneId) || row.occupancyFans > acc.get(row.zoneId)!.occupancy) {
-          acc.set(row.zoneId, {
-            id: row.zoneId,
-            name: row.zoneId,
-            occupancy: row.occupancyFans,
-            capacity: zoneCapacities.get(row.zoneId) ?? 0,
-            occupancyRatio: row.occupancyRatio,
-          });
-        }
-        return acc;
-      }, new Map<string, { id: string; name: string; occupancy: number; capacity: number; occupancyRatio: number }>())
-      .values()
-  );
-}
-
-function extractMatchState(searchParams: URLSearchParams): MatchState {
-  const minuteParam = searchParams.get("minute");
-  return {
-    minute: minuteParam ? parseInt(minuteParam, 10) : null,
-    phase: (searchParams.get("phase") as MatchState["phase"]) ?? "first-half",
-    score: searchParams.get("score") ?? "0-0",
-    homeTeam: searchParams.get("homeTeam") ?? "Home",
-    awayTeam: searchParams.get("awayTeam") ?? "Away",
-  };
-}
 
 function parseChatResponse(rawJson: string): ChatResponse | null {
   try {
@@ -56,7 +21,17 @@ function parseChatResponse(rawJson: string): ChatResponse | null {
   }
 }
 
+import { rateLimit } from "@/lib/api/rateLimit";
+
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+  if (!rateLimit(ip, 15, 60000)) {
+    return new Response(JSON.stringify({ error: "Too many requests" }), {
+      status: 429,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
   const encoder = new TextEncoder();
 
   // Parse and validate request body
@@ -79,9 +54,24 @@ export async function POST(request: NextRequest) {
   }
 
   const { messages } = parsed.data;
+
+  // Basic prompt-injection guard — strip attempts to override system instructions
+  const sanitizeUserInput = (text: string): string =>
+    text
+      .replace(/\bSYSTEM\s*:/gi, "[blocked]")
+      .replace(/ignore\s+(all\s+)?(previous|prior|above)\s+instructions?/gi, "[blocked]")
+      .replace(/<\/?[a-z]+[^>]*>/gi, "") // strip HTML tags
+      .trim()
+      .slice(0, 1000); // hard cap at 1000 chars per message
+
+  const sanitizedMessages = messages.map((m) =>
+    m.role === "user" ? { ...m, content: sanitizeUserInput(m.content) } : m
+  );
+
   const matchState = extractMatchState(request.nextUrl.searchParams);
+  const language = request.nextUrl.searchParams.get("language") || "English";
   const zoneData = getZoneData();
-  const prompt = buildChatPrompt(zoneData, matchState, messages);
+  const prompt = buildChatPrompt(zoneData, matchState, sanitizedMessages, language);
 
   const MAX_RETRIES = 1;
 
