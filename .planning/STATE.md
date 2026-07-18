@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Smart Stadium Operations
-status: executing
-stopped_at: Phase 19 context gathered
-last_updated: "2026-07-18T17:59:45.430Z"
-last_activity: 2026-07-15 — Phase 17 execution started
+status: planning
+stopped_at: Phase 19 planned
+last_updated: "2026-07-18T12:00:00.000Z"
+last_activity: 2026-07-18 — Phase 19 planning complete
 progress:
   total_phases: 19
-  completed_phases: 4
-  total_plans: 19
-  completed_plans: 16
-  percent: 21
-current_phase: 17
-current_phase_name: weather-integration
+  completed_phases: 14
+  total_plans: 51
+  completed_plans: 44
+  percent: 86
+current_phase: 19
+current_phase_name: audit-remediation-and-codebase-hardening
 ---
 
 # Project State
@@ -23,16 +23,16 @@ current_phase_name: weather-integration
 See: .planning/PROJECT.md (updated 2026-07-13)
 
 **Core value:** Operations teams can monitor and respond to real-time crowd risks during a live match, receiving AI-generated safety alerts tied to actual game events, while fans get real-time navigation assistance through a stadium chatbot.
-**Current focus:** Phase 17 — weather-integration
+**Current focus:** Phase 19 — audit-remediation-and-codebase-hardening
 
 ## Current Position
 
-Phase: 17 (weather-integration) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 17
-Last activity: 2026-07-15 — Phase 17 execution started
+Phase: 19 (audit-remediation-and-codebase-hardening) — PLANNED
+Plan: 4 plans (19-01 through 19-04)
+Status: Planning complete, ready for execution
+Last activity: 2026-07-18 — Phase 19 planning complete (4 plans, 4 waves)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [▓▓▓▓▓▓▓▓░░] 78% (14 of 18 phases complete; Phase 19 planned)
 
 ## Phase 14 Plans
 
@@ -56,9 +56,9 @@ Progress: [░░░░░░░░░░] 0%
 
 Full list: .planning/phases/14-server-runtime-match-polling/14-CONTEXT.md## Session Continuity
 
-Last session: 2026-07-18T17:59:45.412Z
-Stopped at: Phase 19 context gathered
-Resume file: .planning/phases/19-audit-remediation-and-codebase-hardening/19-CONTEXT.md
+Last session: 2026-07-15T15:38:07.279Z
+Stopped at: Phase 18 context gathered
+Resume file: .planning/phases/18-demo-mode-integration-wiring/18-CONTEXT.md
 
 ## Session Continuity
 
@@ -797,10 +797,30 @@ None - no external service configuration required.
 
 ## Next Phase Readiness
 
-Data mapping is complete. Ready for API proxy and `useMatchPoller` implementation (Plans 02 and 03).
+Phase 19 planning complete. Ready for execution.
 
-## Accumulated Context
+## Phase 19 Plans
 
-### Roadmap Evolution
+| Plan | Wave | Tasks | Files | Dependency |
+|------|------|-------|-------|-----------|
+| 19-01 Foundation | 1 | 4 | ~19 (4 new, 15 modify) | - |
+| 19-02 Code Quality | 2 | 4 | ~12 (1 new, 10 modify, 1 delete) | 19-01 |
+| 19-03 Security & UX | 3 | 4 | ~24 (2 new, 19 modify, .env) | 19-02 |
+| 19-04 Testing & A11Y | 4 | 2 | ~13 (5 new tests, 7 modify, 1 new component) | 19-03 |
 
-- Phase 19 added: Audit Remediation and Codebase Hardening
+## Phase 19 Key Decisions (from discuss-phase)
+
+- D-19-01: 10 total languages — EN/ES/FR + AR/PT/DE/JA/KO/NL/IT
+- D-19-04: Language switcher uses native script labels
+- D-19-07: /api/sustainability POST endpoint (Gemini)
+- D-19-10: /api/transport POST endpoint (Gemini)
+- D-19-13: highlightedZone store slice for chat→heatmap communication
+- D-19-23: Native <dialog> for ChatPanel focus management
+- D-19-25: usePoller<T> generic hook extraction
+- D-19-36: Remove NEXT_PUBLIC_GEMINI_API_KEY -> /api/report server route
+- D-19-39: Create smoke test files matching package.json commands
+- D-19-40: DynamicHtmlLang component for reactive <html lang>
+- D-19-41: Derived aria-live from alert severity
+- D-19-45: Pass live simOutput to getZoneData() via SSE query params + POST body
+
+Full list: .planning/phases/19-audit-remediation-and-codebase-hardening/19-CONTEXT.md
