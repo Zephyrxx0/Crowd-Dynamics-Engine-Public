@@ -1,7 +1,20 @@
 "use client";
 import { useCallback, useRef } from "react";
-import { useLiveStore } from "@/stores/liveStore";
+import { liveStore, useLiveStore } from "@/stores/liveStore";
 import type { ChatMessage, ChatResponse } from "@/types/chat";
+
+const LOCALE_NAMES: Record<string, string> = {
+  en: "English",
+  es: "Spanish",
+  fr: "French",
+  ar: "Arabic",
+  pt: "Portuguese",
+  de: "German",
+  ja: "Japanese",
+  ko: "Korean",
+  nl: "Dutch",
+  it: "Italian",
+};
 
 export function useChatStream() {
   const addMessage = useLiveStore((s) => s.addMessage);
@@ -36,6 +49,8 @@ export function useChatStream() {
       if (match?.score) params.set("score", match.score);
       if (match?.homeTeam) params.set("homeTeam", match.homeTeam);
       if (match?.awayTeam) params.set("awayTeam", match.awayTeam);
+      const languageName = LOCALE_NAMES[liveStore.getState().language] ?? "English";
+      params.set("language", languageName);
       const url = `/api/chat?${params.toString()}`;
 
       // Build messages to send (last 10)
