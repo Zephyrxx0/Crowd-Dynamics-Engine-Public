@@ -5,6 +5,8 @@ import { AlertEvent } from "@/types/alert";
 
 const RECONNECT_BASE = 1000;
 const RECONNECT_MAX = 8000;
+/** How often the alert stream reconnects to poll for new AI crowd alerts (ms) */
+const ALERT_RECONNECT_MS = 45_000;
 
 export function useAlertStream() {
   const addAlert = useLiveStore((s) => s.addAlert);
@@ -51,7 +53,7 @@ export function useAlertStream() {
             break;
           case "complete":
             source.close();
-            timeoutRef.current = setTimeout(connect, 45000);
+            timeoutRef.current = setTimeout(connect, ALERT_RECONNECT_MS);
             break;
         }
       } catch (err) {

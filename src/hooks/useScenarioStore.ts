@@ -101,16 +101,16 @@ export const useScenarioStore = create<ScenarioState>()(
           ...current,
           zones: current.zones.map((z) => ({
             ...z,
-            capacity: Math.floor(Math.random() * 4000) + 1000,
+            capacity: Math.floor(Math.random() * 600) + 800, // 800 to 1400
           })),
           gates: current.gates.map((g) => ({
             ...g,
-            throughputPerMin: Math.floor(Math.random() * 150) + 50,
-            delayMin: Math.floor(Math.random() * 5),
+            throughputPerMin: Math.floor(Math.random() * 20) + 15, // 15 to 35
+            delayMin: Math.floor(Math.random() * 8), // 0 to 7
           })),
           arrivals: current.arrivals.map((a) => ({
             ...a,
-            demandFans: Math.floor(Math.random() * 5000) + 500,
+            demandFans: Math.floor(Math.random() * 600) + 50, // 50 to 650
           })),
         }
         const parsed = SimulationInputSchema.parse(randomized)

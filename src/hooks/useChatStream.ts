@@ -108,7 +108,7 @@ export function useChatStream() {
         abortRef.current = null;
       }
     },
-    [addMessage, setStreaming, match]
+    [addMessage, updateMessage, setStreaming, match]
   );
 
   const cancelStream = useCallback(() => {
