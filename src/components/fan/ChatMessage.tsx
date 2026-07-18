@@ -22,7 +22,7 @@ export function ChatMessage({ message, isStreaming = false }: ChatMessageProps) 
   const isUser = message.role === "user";
 
   return (
-    <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")} aria-live={isStreaming ? "assertive" : undefined}>
       <div
         className={cn(
           "max-w-[80%] px-4 py-3",

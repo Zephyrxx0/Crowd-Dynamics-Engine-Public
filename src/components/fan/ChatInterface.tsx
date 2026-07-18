@@ -14,6 +14,7 @@ export function ChatInterface() {
   const messages = useLiveStore((s) => s.messages);
   const isStreaming = useLiveStore((s) => s.isStreaming);
   const clearMessages = useLiveStore((s) => s.clearMessages);
+  const t = useLiveStore((s) => s.t);
 
   const { sendMessage, cancelStream } = useChatStream();
 
@@ -55,8 +56,8 @@ export function ChatInterface() {
             <Radio className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <h1 className="text-sm font-semibold uppercase tracking-widest text-foreground">Stadium Assistant</h1>
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Fan Flow · World Cup 26</p>
+            <h1 className="text-sm font-semibold uppercase tracking-widest text-foreground">{t("app.title")}</h1>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("app.subtitle")}</p>
           </div>
         </div>
 

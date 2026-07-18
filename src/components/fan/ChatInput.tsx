@@ -34,7 +34,11 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   return (
     <div className="flex flex-row items-center gap-3">
+      <label htmlFor="chat-input" className="sr-only">
+        Ask about gates, exits, or crowd levels
+      </label>
       <input
+        id="chat-input"
         ref={inputRef}
         type="text"
         value={text}
@@ -42,12 +46,16 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         onKeyDown={handleKeyDown}
         placeholder="ASK ABOUT GATES, EXITS, OR CROWD LEVELS..."
         disabled={disabled}
+        aria-describedby="chat-input-hint"
         className={cn(
           "flex-1 border border-border bg-transparent px-4 py-3 text-sm text-foreground",
           "placeholder:text-muted-foreground placeholder:text-xs placeholder:uppercase placeholder:tracking-widest",
           "focus:border-primary focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
         )}
       />
+      <span id="chat-input-hint" className="sr-only">
+        Press Enter or the Send button to submit your question
+      </span>
       <button
         onClick={handleSubmit}
         disabled={!text.trim() || disabled}

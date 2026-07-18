@@ -88,7 +88,11 @@ export function AlertFeed({ isDisconnected }: AlertFeedProps) {
   };
 
   return (
-    <div className="flex flex-col h-full w-full max-w-5xl mx-auto relative overflow-hidden border border-border bg-background">
+    <div
+      role="region"
+      aria-label="Live AI crowd alerts"
+      className="flex flex-col h-full w-full max-w-5xl mx-auto relative overflow-hidden border border-border bg-background"
+    >
       <div className="flex items-center justify-between px-5 py-4 border-b border-border">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-foreground">Live AI Alerts</h2>
         <button
@@ -113,6 +117,7 @@ export function AlertFeed({ isDisconnected }: AlertFeedProps) {
       <div 
         ref={scrollContainerRef}
         className="flex-1 overflow-y-auto p-4 space-y-3"
+        aria-live="polite"
       >
         {alerts.length === 0 ? (
           <div className="flex items-center justify-center h-32 text-muted-foreground">
@@ -132,10 +137,17 @@ export function AlertFeed({ isDisconnected }: AlertFeedProps) {
                   config.bgColor
                 )}
               >
-                <Icon className={cn("h-4 w-4 mt-0.5 shrink-0", config.iconColor)} />
+                <Icon
+                  className={cn("h-4 w-4 mt-0.5 shrink-0", config.iconColor)}
+                  aria-hidden="true"
+                />
                 <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <Badge variant={config.badgeVariant} className={cn("text-[10px] tracking-widest uppercase", config.badgeClass)}>
+                    <Badge
+                      variant={config.badgeVariant}
+                      className={cn("text-[10px] tracking-widest uppercase", config.badgeClass)}
+                      aria-label={`Severity: ${alert.severity}`}
+                    >
                       {alert.severity}
                     </Badge>
                     <span className="text-xs text-muted-foreground whitespace-nowrap">

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { VisualizationWorkspace } from "@/visualization/components/VisualizationWorkspace"
 import { CinematicHero } from "./CinematicHero"
 import { MagneticDock } from "./MagneticDock"
@@ -6,7 +6,8 @@ import { PresetsToolbar } from "@/components/config/PresetsToolbar"
 import { ScenarioSidebar } from "@/components/config/ScenarioSidebar"
 
 export function AppLayout() {
-  const [activeTab, setActiveTab] = useState("overview")
+  const pathname = usePathname()
+  const activeTab = pathname === "/" ? "overview" : pathname.replace("/", "")
 
   return (
     <div className="min-h-screen w-full pb-24 dark bg-background text-foreground" data-testid="app-layout">
