@@ -26,7 +26,7 @@ export default function SimulatePage() {
         </section>
 
         <section className="flex-[3] w-full min-w-0" data-testid="app-main-content">
-          <VisualizationWorkspace activeTab="simulate" />
+          <VisualizationWorkspace />
         </section>
       </div>
     </main>

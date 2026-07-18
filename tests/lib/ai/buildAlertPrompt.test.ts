@@ -13,7 +13,7 @@ describe("buildAlertPrompt", () => {
     score: "1-0",
     homeTeam: "Home",
     awayTeam: "Away",
-  };
+  } as const;
 
   it("includes all zone names and occupancy data", () => {
     const prompt = buildAlertPrompt(mockZones, mockMatch);

@@ -1,13 +1,13 @@
 import { z } from "zod"
 import { create } from "zustand"
-import { createJSONStorage, persist } from "zustand/middleware"
+import { persist } from "zustand/middleware"
 
-import { useComparisonStore } from "@/hooks/useComparisonStore"
 import { useRiskReportStore } from "@/hooks/useRiskReportStore"
+import { makeValidatedStorage } from "@/lib/storage/makeValidatedStorage"
 import { SimulationInputSchema, type SimulationInput } from "@/simulation/contracts/input.schema"
 import type { SimulationOutput } from "@/simulation/contracts/output.schema"
+import { simulateDeterministic } from "@/simulation/core/simulateDeterministic"
 import { presets, type PresetName } from "@/simulation/presets"
-import { StadiumSim } from "@/simulation/adapters/StadiumSim"
 
 const STORE_KEY = "scenario-store"
 
@@ -35,27 +35,6 @@ export function validatePersistedScenarioState(payload: unknown): ScenarioStateS
   return parsed.success ? parsed.data : null
 }
 
-function parsePersistedStorageEntry(value: string | null): string | null {
-  if (!value) {
-    return null
-  }
-
-  try {
-    const parsed = JSON.parse(value) as { state?: unknown; version?: number }
-    const validatedState = validatePersistedScenarioState(parsed.state)
-    if (!validatedState) {
-      return null
-    }
-
-    return JSON.stringify({
-      state: validatedState,
-      version: parsed.version ?? 0,
-    })
-  } catch {
-    return null
-  }
-}
-
 export const useScenarioStore = create<ScenarioState>()(
   persist(
     (set, get) => ({
@@ -63,12 +42,7 @@ export const useScenarioStore = create<ScenarioState>()(
       savedScenarios: {},
       latestSimulationOutput: null,
       updateInput: (input) => set({ currentInput: SimulationInputSchema.parse(input) }),
-      setLatestSimulationOutput: (output) => {
-        set({ latestSimulationOutput: output })
-        if (output) {
-          useComparisonStore.getState().appendRun(output)
-        }
-      },
+      setLatestSimulationOutput: (output) => set({ latestSimulationOutput: output }),
       saveScenario: (name, input) => {
         const trimmedName = name.trim()
         if (!trimmedName) {
@@ -92,7 +66,7 @@ export const useScenarioStore = create<ScenarioState>()(
       applyPreset: (presetName) => {
         const input = SimulationInputSchema.parse(presets[presetName])
         set({ currentInput: input })
-        const output = StadiumSim.run(input)
+        const output = simulateDeterministic(input)
         get().setLatestSimulationOutput(output)
       },
       randomizeScenario: () => {
@@ -115,17 +89,13 @@ export const useScenarioStore = create<ScenarioState>()(
         }
         const parsed = SimulationInputSchema.parse(randomized)
         set({ currentInput: parsed })
-        const output = StadiumSim.run(parsed)
+        const output = simulateDeterministic(parsed)
         get().setLatestSimulationOutput(output)
       },
     }),
     {
       name: STORE_KEY,
-      storage: createJSONStorage(() => ({
-        getItem: (name) => parsePersistedStorageEntry(window.localStorage.getItem(name)),
-        setItem: (name, value) => window.localStorage.setItem(name, value),
-        removeItem: (name) => window.localStorage.removeItem(name),
-      })),
+      storage: makeValidatedStorage(validatePersistedScenarioState),
       partialize: (state) => ({
         currentInput: state.currentInput,
         savedScenarios: state.savedScenarios,

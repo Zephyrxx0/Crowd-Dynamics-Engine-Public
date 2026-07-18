@@ -3,7 +3,7 @@ import { CURRENT_SCHEMA_VERSION } from "../../src/simulation/contracts/schemaVer
 import { SimulationInputSchema } from "../../src/simulation/contracts/input.schema"
 import { SimulationOutputSchema } from "../../src/simulation/contracts/output.schema"
 import { simulateDeterministic } from "../../src/simulation/core/simulateDeterministic"
-import { StadiumSim } from "../../src/simulation/adapters/StadiumSim"
+import * as simulationExports from "../../src/simulation"
 import { createBaseInput } from "./fixtures"
 
 describe("simulation contracts", () => {
@@ -58,11 +58,11 @@ describe("simulation contracts", () => {
     expect(SimulationInputSchema.safeParse(missingDetailed).success).toBe(false)
   })
 
-  it("StadiumSim run delegates to simulateDeterministic contract", () => {
+  it("exports simulateDeterministic directly from the simulation barrel", () => {
     const payload = createBaseInput()
-    const wrapped = new StadiumSim(payload).run()
+    const exported = simulationExports.simulateDeterministic(payload)
     const pure = simulateDeterministic(payload)
 
-    expect(wrapped).toEqual(pure)
+    expect(exported).toEqual(pure)
   })
 })

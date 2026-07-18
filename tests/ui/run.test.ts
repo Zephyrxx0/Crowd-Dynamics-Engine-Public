@@ -4,8 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { ScenarioForm } from "../../src/components/config/ScenarioForm"
 import { useScenarioStore } from "../../src/hooks/useScenarioStore"
+import * as deterministicSimulation from "../../src/simulation/core/simulateDeterministic"
 import { presets } from "../../src/simulation/presets"
-import { StadiumSim } from "../../src/simulation/adapters/StadiumSim"
 import { simulationOutputFixture } from "./fixtures/simulationOutput"
 
 vi.mock("next/navigation", () => ({
@@ -34,7 +34,7 @@ describe("ScenarioForm run behavior", () => {
     }
     useScenarioStore.getState().setLatestSimulationOutput(previousOutput)
 
-    const runSpy = vi.spyOn(StadiumSim, "run").mockReturnValue(simulationOutputFixture)
+    const runSpy = vi.spyOn(deterministicSimulation, "simulateDeterministic").mockReturnValue(simulationOutputFixture)
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined)
 
     render(React.createElement(ScenarioForm))
@@ -54,7 +54,7 @@ describe("ScenarioForm run behavior", () => {
   })
 
   it("runs deterministic simulation when form input is valid", async () => {
-    const runSpy = vi.spyOn(StadiumSim, "run").mockReturnValue(simulationOutputFixture)
+    const runSpy = vi.spyOn(deterministicSimulation, "simulateDeterministic").mockReturnValue(simulationOutputFixture)
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined)
 
     render(React.createElement(ScenarioForm))

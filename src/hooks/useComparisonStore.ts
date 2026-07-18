@@ -1,12 +1,13 @@
 import { z } from "zod"
 import { create } from "zustand"
-import { createJSONStorage, persist } from "zustand/middleware"
+import { persist } from "zustand/middleware"
 
 import {
   ComparisonPairSchema,
   PersistedRunSchema,
   type PersistedRun,
 } from "@/comparison/contracts/comparison.schema"
+import { makeValidatedStorage } from "@/lib/storage/makeValidatedStorage"
 import type { SimulationOutput } from "@/simulation/contracts/output.schema"
 
 const STORE_KEY = "comparison-store"
@@ -31,27 +32,6 @@ const defaultState: PersistedComparisonState = {
   runHistory: [],
   baselineRunId: null,
   candidateRunId: null,
-}
-
-function parsePersistedStorageEntry(value: string | null): string | null {
-  if (!value) {
-    return null
-  }
-
-  try {
-    const parsed = JSON.parse(value) as { state?: unknown; version?: number }
-    const validatedState = PersistedComparisonStateSchema.safeParse(parsed.state)
-    if (!validatedState.success) {
-      return null
-    }
-
-    return JSON.stringify({
-      state: validatedState.data,
-      version: parsed.version ?? 0,
-    })
-  } catch {
-    return null
-  }
 }
 
 function getRunById(runHistory: PersistedRun[], runId: string | null) {
@@ -149,11 +129,10 @@ export const useComparisonStore = create<ComparisonStoreState>()(
     }),
     {
       name: STORE_KEY,
-      storage: createJSONStorage(() => ({
-        getItem: (name) => parsePersistedStorageEntry(window.localStorage.getItem(name)),
-        setItem: (name, value) => window.localStorage.setItem(name, value),
-        removeItem: (name) => window.localStorage.removeItem(name),
-      })),
+      storage: makeValidatedStorage((raw) => {
+        const result = PersistedComparisonStateSchema.safeParse(raw)
+        return result.success ? result.data : null
+      }),
       partialize: (state) => ({
         runHistory: state.runHistory,
         baselineRunId: state.baselineRunId,

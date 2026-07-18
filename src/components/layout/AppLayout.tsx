@@ -35,7 +35,7 @@ export function AppLayout() {
             )}
 
             <section className="flex-[3] w-full min-w-0" data-testid="app-main-content">
-              <VisualizationWorkspace activeTab={activeTab} />
+              <VisualizationWorkspace />
             </section>
           </div>
         </main>

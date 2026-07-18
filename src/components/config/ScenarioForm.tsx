@@ -14,13 +14,14 @@ import {
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { StadiumSim } from "@/simulation/adapters/StadiumSim"
 import {
   SimulationInputSchema,
   type SimulationInput,
 } from "@/simulation/contracts/input.schema"
+import { useComparisonStore } from "@/hooks/useComparisonStore"
 import { useScenarioStore } from "@/hooks/useScenarioStore"
 import { useRiskReportStore } from "@/hooks/useRiskReportStore"
+import { simulateDeterministic } from "@/simulation/core/simulateDeterministic"
 import { ValidationList } from "./ValidationList"
 import { cn } from "@/lib/utils"
 
@@ -136,8 +137,9 @@ export function ScenarioForm() {
   const onValidInput = (input: SimulationInput) => {
     setValidationErrors([])
     updateInput(input)
-    const result = StadiumSim.run(input)
+    const result = simulateDeterministic(input)
     setLatestSimulationOutput(result)
+    useComparisonStore.getState().appendRun(result)
   }
 
   const onInvalidInput = (errors: FieldErrors<SimulationInput>) => {
