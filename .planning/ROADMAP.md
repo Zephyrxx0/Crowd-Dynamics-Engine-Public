@@ -176,7 +176,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 — uses usePoller)*
 
-- [ ] 19-02-PLAN.md — Code Quality: useAlertStream ref-match fix, StadiumSim delete, cross-store coupling fix, resolvePhaseEvent extraction + /api/report server route
+- [x] 19-02-PLAN.md — Code Quality: useAlertStream ref-match fix, StadiumSim delete, cross-store coupling fix, resolvePhaseEvent extraction + /api/report server route
 
 **Wave 3** *(blocked on Wave 2 — /api/report must exist for security fix)*
 
