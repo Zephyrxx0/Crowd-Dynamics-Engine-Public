@@ -16,10 +16,16 @@ type SustainabilityData = {
   transportTips: string[];
 };
 
+let cachedHash: string | null = null;
+let cachedData: SustainabilityData | null = null;
+
 export function SustainabilityPanel() {
   const t = useLiveStore((s) => s.t);
   const latestSimulationOutput = useScenarioStore((s) => s.latestSimulationOutput);
-  const [sustainabilityData, setSustainabilityData] = useState<SustainabilityData | null>(null);
+  
+  const [sustainabilityData, setSustainabilityData] = useState<SustainabilityData | null>(
+    latestSimulationOutput?.runDeterministicHash === cachedHash ? cachedData : null
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +35,14 @@ export function SustainabilityPanel() {
       return;
     }
 
+    if (latestSimulationOutput.runDeterministicHash === cachedHash && cachedData) {
+      setSustainabilityData(cachedData);
+      return;
+    }
+
     const controller = new AbortController();
+    let ignore = false;
+    
     setLoading(true);
     setError(null);
 
@@ -48,16 +61,29 @@ export function SustainabilityPanel() {
         }
         return response.json() as Promise<SustainabilityData>;
       })
-      .then((data) => setSustainabilityData(data))
+      .then((data) => {
+        if (ignore) return;
+        cachedHash = latestSimulationOutput.runDeterministicHash;
+        cachedData = data;
+        setSustainabilityData(data);
+      })
       .catch((caughtError) => {
+        if (ignore) return;
         if (caughtError instanceof DOMException && caughtError.name === "AbortError") {
           return;
         }
         setError(caughtError instanceof Error ? caughtError.message : "Unable to load sustainability data");
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!ignore) {
+          setLoading(false);
+        }
+      });
 
-    return () => controller.abort();
+    return () => {
+      ignore = true;
+      controller.abort();
+    };
   }, [latestSimulationOutput]);
 
   return (
@@ -67,6 +93,16 @@ export function SustainabilityPanel() {
           <span className="flex items-center gap-2">
             <Leaf className="h-4 w-4 text-emerald-500" />
             {t("dashboard.sustainability_score")}
+            {loading ? (
+              <span className="relative flex h-2 w-2 ml-1" title="Generating report...">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+            ) : sustainabilityData ? (
+              <span className="relative flex h-2 w-2 ml-1" title="Live report">
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+            ) : null}
           </span>
           {sustainabilityData && <Badge className="bg-emerald-500 text-white">{sustainabilityData.greenScore}/100</Badge>}
         </CardTitle>

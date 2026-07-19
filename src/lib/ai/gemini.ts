@@ -51,7 +51,7 @@ export async function* streamGeminiResponse(
       generationConfig: {
         temperature: 0.2,
         responseMimeType: "application/json",
-        maxOutputTokens: 1024,
+        maxOutputTokens: 4096,
       },
     }),
     signal: options?.signal,
@@ -100,6 +100,18 @@ export async function* streamGeminiResponse(
         }
       }
     }
+    
+    if (buffer.startsWith("data: ")) {
+      const dataStr = buffer.slice("data: ".length).trim();
+      if (dataStr) {
+        try {
+          const data = JSON.parse(dataStr);
+          if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+            yield data.candidates[0].content.parts[0].text;
+          }
+        } catch (e) {}
+      }
+    }
   } finally {
     reader.releaseLock();
   }
@@ -107,7 +119,8 @@ export async function* streamGeminiResponse(
 
 export function validateAlertOutput(rawJson: string): AlertEvent[] {
   try {
-    const parsed = JSON.parse(rawJson);
+    const cleanedJson = rawJson.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    const parsed = JSON.parse(cleanedJson);
     const items = Array.isArray(parsed) ? parsed : [parsed];
     const validEvents: AlertEvent[] = [];
 

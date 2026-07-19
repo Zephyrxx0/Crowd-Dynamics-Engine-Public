@@ -2,7 +2,8 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { rateLimit } from "@/lib/api/rateLimit";
-import { GeminiFetchError, GeminiRateLimitError, streamGeminiResponse } from "@/lib/ai/gemini";
+import { collectGeminiJson } from "@/lib/ai/collectGeminiJson";
+import { GeminiFetchError, GeminiRateLimitError } from "@/lib/ai/gemini";
 import { RiskReportSchema } from "@/reporting/contracts/riskReport.schema";
 import { buildGeminiRiskPrompt } from "@/reporting/gemini/buildPrompt";
 import { SimulationOutputSchema } from "@/simulation/contracts/output.schema";
@@ -13,14 +14,6 @@ export const maxDuration = 120;
 const ReportRequestSchema = z.object({
   output: SimulationOutputSchema,
 });
-
-async function collectGeminiJson(prompt: string, signal: AbortSignal) {
-  let rawJson = "";
-  for await (const token of streamGeminiResponse(prompt, { signal })) {
-    rawJson += token;
-  }
-  return rawJson.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-}
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";

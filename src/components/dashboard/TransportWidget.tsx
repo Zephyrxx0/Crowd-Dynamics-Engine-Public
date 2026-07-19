@@ -1,5 +1,5 @@
 "use client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLiveStore } from "@/stores/liveStore";
 import { useScenarioStore } from "@/hooks/useScenarioStore";
 
@@ -23,6 +23,22 @@ const TRANSPORT_ROUTES = [
   { name: "Stadium Shuttle", accessible: true, status: "On Time", urgency: "low" },
 ] as const;
 
+type TransportRoute = {
+  name: string;
+  accessible: boolean;
+  status: "On Time" | "Delayed" | "Surge Active" | "Standby";
+  urgency: "low" | "medium" | "high";
+};
+
+type TransportRecommendation = {
+  routeName: string;
+  status: TransportRoute["status"];
+  delayMin: number | null;
+  aiReason: string;
+  accessible: boolean;
+  urgency: TransportRoute["urgency"];
+};
+
 function statusColorForUrgency(urgency: string) {
   if (urgency === "high") return "bg-red-500";
   if (urgency === "medium") return "bg-amber-500";
@@ -32,6 +48,7 @@ function statusColorForUrgency(urgency: string) {
 export function TransportWidget() {
   const t = useLiveStore((s) => s.t);
   const latestSimulationOutput = useScenarioStore((s) => s.latestSimulationOutput);
+  const [aiRoutes, setAiRoutes] = useState<TransportRoute[] | null>(null);
 
   const co2Saved = useMemo(() => {
     if (latestSimulationOutput) {
@@ -45,7 +62,7 @@ export function TransportWidget() {
     return estimateCO2Saved(1800);
   }, [latestSimulationOutput]);
 
-  const routes = useMemo(() => {
+  const fallbackRoutes = useMemo<TransportRoute[]>(() => {
     const hasHighOccupancy =
       latestSimulationOutput?.phaseZoneMatrix.some((row) => row.occupancyRatio >= 0.8) ?? false;
 
@@ -61,6 +78,59 @@ export function TransportWidget() {
       return { ...route, status: "Delayed", urgency: "high" };
     });
   }, [latestSimulationOutput]);
+
+  useEffect(() => {
+    if (!latestSimulationOutput) {
+      setAiRoutes(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    const zoneOccupancy = Object.fromEntries(
+      latestSimulationOutput.phaseZoneMatrix.map((row) => [row.zoneId, row.occupancyRatio])
+    );
+
+    async function fetchTransportRecommendations() {
+      try {
+        const response = await fetch("/api/transport", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            zoneOccupancy,
+            routes: TRANSPORT_ROUTES.map((route) => route.name),
+          }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error("Transport recommendations unavailable");
+        }
+
+        const data = (await response.json()) as { recommendations?: TransportRecommendation[] };
+        if (!Array.isArray(data.recommendations)) {
+          throw new Error("Invalid transport recommendations");
+        }
+
+        setAiRoutes(
+          data.recommendations.map((route) => ({
+            name: route.routeName,
+            accessible: route.accessible,
+            status: route.status,
+            urgency: route.urgency,
+          }))
+        );
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setAiRoutes(null);
+        }
+      }
+    }
+
+    fetchTransportRecommendations();
+    return () => controller.abort();
+  }, [latestSimulationOutput]);
+
+  const routes = aiRoutes ?? fallbackRoutes;
 
   return (
     <div className="bg-card border border-border p-4 rounded-lg space-y-3" role="region" aria-label="Transport and sustainability information">

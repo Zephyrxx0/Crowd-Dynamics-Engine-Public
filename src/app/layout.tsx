@@ -33,6 +33,7 @@ import { MagneticDock } from "@/components/layout/MagneticDock"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
 import { ChatPanel } from "@/components/fan/ChatPanel"
+import { DynamicHtmlLang } from "@/components/DynamicHtmlLang"
 
 export default function RootLayout({
   children,
@@ -43,8 +44,15 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${GeistPixelCircle.variable} ${GeistPixelSquare.variable} ${GeistPixelTriangle.variable} ${GeistMono.variable} font-sans antialiased min-h-screen flex flex-col bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <DynamicHtmlLang />
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-background focus:text-foreground focus:border focus:border-border focus:rounded"
+          >
+            Skip to main content
+          </a>
           <Header />
-          <div className="flex-1 flex flex-col min-h-[calc(100vh-4rem)]">
+          <div id="main-content" className="flex-1 flex flex-col min-h-[calc(100vh-4rem)]">
             {children}
           </div>
           <MagneticDock />

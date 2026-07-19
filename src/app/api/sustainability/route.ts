@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { streamGeminiResponse, GeminiFetchError, GeminiRateLimitError } from "@/lib/ai/gemini";
+import { collectGeminiJson } from "@/lib/ai/collectGeminiJson";
+import { GeminiFetchError, GeminiRateLimitError } from "@/lib/ai/gemini";
 import { rateLimit } from "@/lib/api/rateLimit";
 
 export const dynamic = "force-dynamic";
@@ -24,16 +25,8 @@ function buildSustainabilityPrompt(input: z.infer<typeof SustainabilityRequestSc
     "Return only JSON matching this schema:",
     '{"co2KgTotal": number, "greenScore": number, "recommendations": string[], "transportTips": string[]}',
     "Estimate carbon impact, green transport opportunities, and operational sustainability KPIs.",
-    `Crowd data: ${JSON.stringify(input).slice(0, 8000)}`,
+    `Crowd data: ${JSON.stringify(input)}`,
   ].join("\n");
-}
-
-async function collectGeminiJson(prompt: string, signal: AbortSignal) {
-  let rawJson = "";
-  for await (const token of streamGeminiResponse(prompt, { signal })) {
-    rawJson += token;
-  }
-  return rawJson.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
 }
 
 export async function POST(request: NextRequest) {

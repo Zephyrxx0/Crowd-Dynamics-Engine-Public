@@ -41,11 +41,20 @@ export function usePoller<T>(
   const stateRef = useRef(state);
   const fetchFnRef = useRef(fetchFn);
   const onSuccessRef = useRef(onSuccess);
+  const enabledRef = useRef(enabled !== false);
+  const maxRetriesRef = useRef(maxRetries);
+  const retryBaseMsRef = useRef(retryBaseMs);
+  const errorMessageRef = useRef(errorMessage);
   const retryCountRef = useRef(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isVisibleRef = useRef(true);
   const isFetchingRef = useRef(false);
+
+  enabledRef.current = enabled !== false;
+  maxRetriesRef.current = maxRetries;
+  retryBaseMsRef.current = retryBaseMs;
+  errorMessageRef.current = errorMessage;
 
   useEffect(() => {
     stateRef.current = state;
@@ -71,7 +80,7 @@ export function usePoller<T>(
   }, []);
 
   const doFetch = useCallback(async () => {
-    if (!isVisibleRef.current || enabled === false || isFetchingRef.current) return;
+    if (!isVisibleRef.current || !enabledRef.current || isFetchingRef.current) return;
 
     isFetchingRef.current = true;
     try {
@@ -88,16 +97,16 @@ export function usePoller<T>(
       retryCountRef.current += 1;
       const currentRetry = retryCountRef.current;
 
-      if (currentRetry <= maxRetries) {
+      if (currentRetry <= maxRetriesRef.current) {
         setState((prev) => ({ ...prev, isRetrying: true }));
         retryTimerRef.current = setTimeout(
           doFetch,
-          retryBaseMs * Math.pow(2, currentRetry - 1)
+          retryBaseMsRef.current * Math.pow(2, currentRetry - 1)
         );
       } else {
         setState((prev) => ({
           ...prev,
-          error: errorMessage,
+          error: errorMessageRef.current,
           isRetrying: false,
         }));
         retryCountRef.current = 0;
@@ -105,7 +114,7 @@ export function usePoller<T>(
     } finally {
       isFetchingRef.current = false;
     }
-  }, [enabled, errorMessage, maxRetries, retryBaseMs]);
+  }, []);
 
   useEffect(() => {
     if (enabled === false) {

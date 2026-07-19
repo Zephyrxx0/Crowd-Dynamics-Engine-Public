@@ -30,7 +30,7 @@ export default function VolunteerPage() {
         </div>
         <div>
           <h1 className="text-xl font-bold tracking-tight">Volunteer Portal</h1>
-          <p className="text-sm text-muted-foreground">{gateLabel} • Duty Roster #{rosterNumber}</p>
+          <p suppressHydrationWarning className="text-sm text-muted-foreground">{gateLabel} • Duty Roster #{rosterNumber}</p>
         </div>
       </div>
 
