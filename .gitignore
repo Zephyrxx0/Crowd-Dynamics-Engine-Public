@@ -116,6 +116,7 @@ Dockerfile
 
 *.md
 !.planning/
+
 !.planning/**/*-UI-REVIEW.md
 !.planning/**/*-PLAN.md
 !.planning/**/*-SUMMARY.md

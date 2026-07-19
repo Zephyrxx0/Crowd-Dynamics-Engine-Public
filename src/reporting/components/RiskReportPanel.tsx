@@ -3,6 +3,15 @@ import { Button } from "@/components/ui/button"
 import { useRiskReportStore } from "@/hooks/useRiskReportStore"
 import { ReportSections } from "./ReportSections"
 
+const GENERIC_FALLBACK_MESSAGE = "AI generation failed; deterministic fallback shown."
+
+function fallbackDescription(errorMessage: string | null) {
+  if (!errorMessage || errorMessage === GENERIC_FALLBACK_MESSAGE) {
+    return "The report below was generated from deterministic simulation rules."
+  }
+
+  return errorMessage
+}
 
 export function RiskReportPanel() {
   const status = useRiskReportStore((state) => state.status)
@@ -45,8 +54,8 @@ export function RiskReportPanel() {
 
       {status === "fallback" ? (
         <Alert data-testid="report-fallback-state" className="bg-red-900/20 border-red-500/50 text-red-400">
-          <AlertTitle>AI generation failed - deterministic fallback shown</AlertTitle>
-          <AlertDescription className="text-red-400/70">{errorMessage ?? "Unknown AI generation error."}</AlertDescription>
+          <AlertTitle>Deterministic fallback report shown</AlertTitle>
+          <AlertDescription className="text-red-400/70">{fallbackDescription(errorMessage)}</AlertDescription>
         </Alert>
       ) : null}
 

@@ -18,6 +18,7 @@ vi.mock("@/stores/liveStore", () => ({
 
 describe("useDemoSequence", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.useFakeTimers();
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => mockTimeline }));
   });
@@ -32,7 +33,7 @@ describe("useDemoSequence", () => {
     const { result } = renderHook(() => useDemoSequence(true, 5000));
     
     // fetch is called immediately
-    expect(fetch).toHaveBeenCalledWith("/api/demo");
+    expect(fetch).toHaveBeenCalledWith("/api/demo", { signal: expect.any(AbortSignal) });
     
     // Resolve the promise
     await act(async () => {
@@ -126,6 +127,33 @@ describe("useDemoSequence", () => {
     
     expect(fetch).not.toHaveBeenCalled();
     expect(result.current.currentEvent).toBeNull();
+  });
+
+  it("ignores invalid demo timeline responses", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ eventType: "bad-event" }],
+    } as Response);
+
+    const { result } = renderHook(() => useDemoSequence(true, 5000));
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(result.current.currentEvent).toBeNull();
+    expect(result.current.isPlaying).toBe(false);
+    expect(mockSetMatch).not.toHaveBeenCalled();
+  });
+
+  it("aborts an in-flight timeline request on unmount", () => {
+    const abortSpy = vi.spyOn(AbortController.prototype, "abort");
+    const { unmount } = renderHook(() => useDemoSequence(true, 5000));
+
+    unmount();
+
+    expect(abortSpy).toHaveBeenCalledTimes(1);
   });
 
   it("cleans up interval on unmount", async () => {

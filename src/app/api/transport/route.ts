@@ -35,6 +35,40 @@ function buildTransportPrompt(input: z.infer<typeof TransportRequestSchema>) {
   ].join("\n");
 }
 
+function buildFallbackTransportRecommendations(input: z.infer<typeof TransportRequestSchema>) {
+  const occupancyValues = Object.values(input.zoneOccupancy);
+  const peakOccupancy = occupancyValues.length > 0 ? Math.max(...occupancyValues) : 0;
+  const highPressure = peakOccupancy >= 0.85;
+  const moderatePressure = peakOccupancy >= 0.7;
+
+  return {
+    recommendations: input.routes.map((routeName) => {
+      const accessible = /accessible|van|shuttle/i.test(routeName);
+      const status = highPressure
+        ? accessible
+          ? "Surge Active"
+          : "Delayed"
+        : moderatePressure
+          ? "Standby"
+          : "On Time";
+      const urgency = highPressure ? "high" : moderatePressure ? "medium" : "low";
+
+      return {
+        routeName,
+        status,
+        delayMin: status === "Delayed" ? 12 : null,
+        aiReason: highPressure
+          ? "Fallback recommendation: peak zone occupancy is high, so transport capacity should be actively managed."
+          : moderatePressure
+            ? "Fallback recommendation: crowd pressure is building, so keep this route ready for dispatch."
+            : "Fallback recommendation: current zone occupancy supports normal route operations.",
+        accessible,
+        urgency,
+      };
+    }),
+  } satisfies z.infer<typeof TransportResponseSchema>;
+}
+
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
   if (!rateLimit(ip, 15, 60000)) {
@@ -60,21 +94,26 @@ export async function POST(request: NextRequest) {
     const rawJson = await collectGeminiJson(buildTransportPrompt(parsed.data), request.signal);
     const output = TransportResponseSchema.safeParse(JSON.parse(rawJson));
     if (!output.success) {
-      return Response.json(
-        { error: "Invalid AI response", details: output.error.flatten() },
-        { status: 502 }
-      );
+      return Response.json(buildFallbackTransportRecommendations(parsed.data), {
+        status: 200,
+        headers: { "X-Transport-Source": "fallback", "X-Transport-Fallback-Reason": "invalid-ai-response" },
+      });
     }
 
     return Response.json(output.data);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
     if (error instanceof GeminiFetchError && error.message.includes("Missing GEMINI_API_KEY")) {
-      return Response.json({ error: "API key not configured" }, { status: 500 });
+      return Response.json(buildFallbackTransportRecommendations(parsed.data), {
+        status: 200,
+        headers: { "X-Transport-Source": "fallback", "X-Transport-Fallback-Reason": "api-key-not-configured" },
+      });
     }
     if (error instanceof GeminiRateLimitError) {
       return Response.json({ error: "Rate limit reached — please try again" }, { status: 429 });
     }
-    return Response.json({ error: message }, { status: 502 });
+    return Response.json(buildFallbackTransportRecommendations(parsed.data), {
+      status: 200,
+      headers: { "X-Transport-Source": "fallback", "X-Transport-Fallback-Reason": "ai-generation-failed" },
+    });
   }
 }

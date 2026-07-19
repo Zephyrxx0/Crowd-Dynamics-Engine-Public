@@ -28,6 +28,21 @@ describe("RiskReportPanel", () => {
     expect(screen.getByTestId("report-retry-button")).toBeInTheDocument()
   })
 
+  it("does not repeat the generic fallback failure message", () => {
+    const fallbackReport = buildDeterministicRiskReport(simulationOutputFixture)
+    useRiskReportStore.setState({
+      status: "fallback",
+      report: fallbackReport,
+      errorMessage: "AI generation failed; deterministic fallback shown.",
+    })
+
+    render(React.createElement(RiskReportPanel))
+
+    expect(screen.getByText("Deterministic fallback report shown")).toBeInTheDocument()
+    expect(screen.queryByText("AI generation failed; deterministic fallback shown.")).not.toBeInTheDocument()
+    expect(screen.getByText("The report below was generated from deterministic simulation rules.")).toBeInTheDocument()
+  })
+
   it("renders mandatory report sections", () => {
     const fallbackReport = buildDeterministicRiskReport(simulationOutputFixture)
     useRiskReportStore.setState({

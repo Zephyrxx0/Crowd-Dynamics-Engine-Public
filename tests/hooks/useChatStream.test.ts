@@ -20,17 +20,20 @@ const mockSSEData =
 describe("useChatStream", () => {
   let mockFetch: ReturnType<typeof vi.fn>;
   let addMessageMock: ReturnType<typeof vi.fn>;
+  let updateMessageMock: ReturnType<typeof vi.fn>;
   let setStreamingMock: ReturnType<typeof vi.fn>;
   let mockMatch: { minute: number; phase: string; score: string; homeTeam: string; awayTeam: string };
 
   beforeEach(() => {
     addMessageMock = vi.fn();
+    updateMessageMock = vi.fn();
     setStreamingMock = vi.fn();
     mockMatch = { minute: 55, phase: "second-half", score: "2-1", homeTeam: "Iran", awayTeam: "Japan" };
 
     vi.spyOn(liveStore, "useLiveStore").mockImplementation((selector: any) => {
       return selector({
         addMessage: addMessageMock,
+        updateMessage: updateMessageMock,
         setStreaming: setStreamingMock,
         messages: [],
         match: mockMatch,
@@ -147,5 +150,25 @@ describe("useChatStream", () => {
         await result.current.sendMessage("Hello", []);
       })
     ).resolves.not.toThrow();
+  });
+
+  it("ignores malformed structured responses from the stream", async () => {
+    mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      body: makeMockSSEStream('data: {"type":"structured","response":{"text":""}}\n\n'),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const { result } = renderHook(() => useChatStream());
+
+    await act(async () => {
+      await result.current.sendMessage("Hello", []);
+    });
+
+    expect(updateMessageMock).not.toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ structuredData: expect.anything() })
+    );
   });
 });

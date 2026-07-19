@@ -48,7 +48,14 @@ export const useRiskReportStore = create<RiskReportState>((set, get) => ({
 
     try {
       const report = await generateRiskReport({ output, invokeModel: current.generator ?? undefined })
-      set({ status: "success", report, errorMessage: null })
+      set({
+        status: report.source === "fallback" ? "fallback" : "success",
+        report,
+        errorMessage:
+          report.source === "fallback"
+            ? "AI generation failed; deterministic fallback shown."
+            : null,
+      })
     } catch (error) {
       const fallbackReport = buildDeterministicRiskReport(output)
       set({

@@ -35,7 +35,7 @@ export function ChatMessage({ message, isStreaming = false }: ChatMessageProps) 
         )}
       >
         {message.structuredData ? (
-          <StreamingContent text={message.structuredData.text || message.content} structured={message.structuredData as any} />
+          <StreamingContent text={message.structuredData.text || message.content} structured={message.structuredData} />
         ) : isStreaming && !message.content ? (
           <TypingIndicator />
         ) : (
@@ -49,13 +49,14 @@ export function ChatMessage({ message, isStreaming = false }: ChatMessageProps) 
         {mapTarget && !isUser && (
           <button
             type="button"
+            aria-label={`View ${mapTarget} on map`}
             onClick={() => {
               liveStore.getState().setHighlightedZone(mapTarget);
               document.querySelector('[data-testid="stadium-heatmap"]')?.scrollIntoView({ behavior: "smooth" });
             }}
             className="mt-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:text-primary/80"
           >
-            <Map className="h-3 w-3" />
+            <Map className="h-3 w-3" aria-hidden="true" />
             View on map
           </button>
         )}

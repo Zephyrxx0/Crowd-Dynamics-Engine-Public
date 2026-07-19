@@ -1,20 +1,8 @@
 "use client";
 import { useCallback, useRef } from "react";
 import { liveStore, useLiveStore } from "@/stores/liveStore";
-import type { ChatMessage, ChatResponse } from "@/types/chat";
-
-const LOCALE_NAMES: Record<string, string> = {
-  en: "English",
-  es: "Spanish",
-  fr: "French",
-  ar: "Arabic",
-  pt: "Portuguese",
-  de: "German",
-  ja: "Japanese",
-  ko: "Korean",
-  nl: "Dutch",
-  it: "Italian",
-};
+import { LOCALE_TO_LANGUAGE_NAME } from "@/stores/slices/i18nSlice";
+import { ChatResponseSchema, type ChatMessage } from "@/types/chat";
 
 export function useChatStream() {
   const addMessage = useLiveStore((s) => s.addMessage);
@@ -49,7 +37,7 @@ export function useChatStream() {
       if (match?.score) params.set("score", match.score);
       if (match?.homeTeam) params.set("homeTeam", match.homeTeam);
       if (match?.awayTeam) params.set("awayTeam", match.awayTeam);
-      const languageName = LOCALE_NAMES[liveStore.getState().language] ?? "English";
+      const languageName = LOCALE_TO_LANGUAGE_NAME[liveStore.getState().language] ?? "English";
       params.set("language", languageName);
       const url = `/api/chat?${params.toString()}`;
 
@@ -101,7 +89,10 @@ export function useChatStream() {
                     assistantContent += data.text;
                     updateMessage(assistantId, { content: assistantContent });
                   } else if (data.type === "structured" && data.response) {
-                    updateMessage(assistantId, { structuredData: data.response });
+                    const parsed = ChatResponseSchema.safeParse(data.response);
+                    if (parsed.success) {
+                      updateMessage(assistantId, { structuredData: parsed.data });
+                    }
                   }
                 } catch {
                   // Ignore parse errors
@@ -117,7 +108,9 @@ export function useChatStream() {
           // Silently handle abort — new message was sent
           return;
         }
-        console.error("[useChatStream] Error:", err);
+        updateMessage(assistantId, {
+          content: assistantContent || "Sorry, the assistant is unavailable right now.",
+        });
       } finally {
         setStreaming(false);
         abortRef.current = null;

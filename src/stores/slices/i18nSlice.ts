@@ -8,8 +8,6 @@ export interface I18nSlice {
   t: (key: string) => string;
 }
 
-type TranslationMap = Record<SupportedLocale, Record<string, string>>;
-
 export const LOCALE_TO_LANGUAGE_NAME: Record<SupportedLocale, string> = {
   en: "English",
   es: "Spanish",
@@ -93,10 +91,15 @@ const en = {
   "dashboard.decision_support": "Decision support",
 };
 
+export type TranslationKey = keyof typeof en;
+
+export const TRANSLATION_KEYS = Object.keys(en) as TranslationKey[];
+
+type TranslationMap = Record<SupportedLocale, Record<TranslationKey, string>>;
+
 const translations: TranslationMap = {
   en,
   es: {
-    ...en,
     "app.title": "Asistente de Estadio",
     "app.subtitle": "Flujo de Aficionados · Mundial 26",
     "chat.new": "Nuevo",
@@ -166,7 +169,6 @@ const translations: TranslationMap = {
     "dashboard.decision_support": "Apoyo a decisiones",
   },
   fr: {
-    ...en,
     "app.title": "Assistant de Stade",
     "app.subtitle": "Flux des Fans · Coupe du Monde 26",
     "chat.new": "Nouveau",
@@ -236,7 +238,6 @@ const translations: TranslationMap = {
     "dashboard.decision_support": "Aide à la décision",
   },
   ar: {
-    ...en,
     "app.title": "مساعد الملعب",
     "app.subtitle": "تدفق الجماهير · كأس العالم 26",
     "chat.new": "جديد",
@@ -306,7 +307,6 @@ const translations: TranslationMap = {
     "dashboard.decision_support": "دعم القرار",
   },
   pt: {
-    ...en,
     "app.title": "Assistente do Estádio",
     "app.subtitle": "Fluxo de Torcedores · Copa 26",
     "chat.new": "Novo",
@@ -376,7 +376,6 @@ const translations: TranslationMap = {
     "dashboard.decision_support": "Apoio à decisão",
   },
   de: {
-    ...en,
     "app.title": "Stadionassistent",
     "app.subtitle": "Fanfluss · Weltmeisterschaft 26",
     "chat.new": "Neu",
@@ -446,7 +445,6 @@ const translations: TranslationMap = {
     "dashboard.decision_support": "Entscheidungsunterstützung",
   },
   ja: {
-    ...en,
     "app.title": "スタジアムアシスタント",
     "app.subtitle": "ファン動線 · ワールドカップ26",
     "chat.new": "新規",
@@ -516,7 +514,6 @@ const translations: TranslationMap = {
     "dashboard.decision_support": "意思決定支援",
   },
   ko: {
-    ...en,
     "app.title": "경기장 어시스턴트",
     "app.subtitle": "팬 흐름 · 월드컵 26",
     "chat.new": "새로 만들기",
@@ -586,7 +583,6 @@ const translations: TranslationMap = {
     "dashboard.decision_support": "의사결정 지원",
   },
   nl: {
-    ...en,
     "app.title": "Stadionassistent",
     "app.subtitle": "Supportersstroom · WK 26",
     "chat.new": "Nieuw",
@@ -656,7 +652,6 @@ const translations: TranslationMap = {
     "dashboard.decision_support": "Beslissingsondersteuning",
   },
   it: {
-    ...en,
     "app.title": "Assistente dello Stadio",
     "app.subtitle": "Flusso tifosi · Mondiale 26",
     "chat.new": "Nuovo",
@@ -732,6 +727,6 @@ export const createI18nSlice: StateCreator<I18nSlice> = (set, get) => ({
   setLanguage: (lang) => set({ language: lang }),
   t: (key) => {
     const lang = get().language;
-    return translations[lang][key] ?? key;
+    return translations[lang][key as TranslationKey] ?? key;
   },
 });

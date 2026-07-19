@@ -181,4 +181,28 @@ describe("useMatchPoller", () => {
     // fetchFn should only be called once, not during the 60s after unmount
     expect(fetchFn).toHaveBeenCalledTimes(1);
   });
+
+  it("does not run a scheduled retry after polling is disabled", async () => {
+    const fetchFn = vi.fn().mockRejectedValue(new Error("Network error"));
+    const { rerender, result } = renderHook(
+      ({ enabled }) => useMatchPoller(fetchFn, enabled),
+      { initialProps: { enabled: true } }
+    );
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+    expect(result.current.isRetrying).toBe(true);
+
+    rerender({ enabled: false });
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1_000);
+    });
+
+    expect(result.current.isPolling).toBe(false);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+  });
 });

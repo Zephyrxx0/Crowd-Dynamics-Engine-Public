@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { type DemoEvent } from "@/types/demo";
+import { DemoEventSequenceSchema, type DemoEvent } from "@/types/demo";
 import { useLiveStore, liveStore } from "@/stores/liveStore";
 import { applyPhaseTransitionDeltas } from "@/lib/api/phaseTransitions";
 import { presets } from "@/simulation/presets";
@@ -19,19 +19,43 @@ export function useDemoSequence(isActive: boolean, advanceIntervalMs: number = 5
 
   // Fetch timeline on activate
   useEffect(() => {
-    if (isActive && !timelineRef.current) {
-      fetch("/api/demo")
-        .then((res) => res.json())
-        .then((data) => {
-          timelineRef.current = data;
-          setCurrentIndex(0);
-          setTimelineVersion((version) => version + 1);
-          setIsPlaying(true);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch demo timeline", err);
-        });
-    }
+    if (!isActive || timelineRef.current) return;
+
+    const controller = new AbortController();
+    let ignore = false;
+
+    fetch("/api/demo", { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Demo timeline unavailable: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const parsed = DemoEventSequenceSchema.safeParse(data);
+        if (!parsed.success) {
+          throw new Error("Invalid demo timeline response");
+        }
+        if (ignore) return;
+
+        timelineRef.current = parsed.data;
+        setCurrentIndex(0);
+        setTimelineVersion((version) => version + 1);
+        setIsPlaying(true);
+      })
+      .catch((error) => {
+        if (ignore) return;
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        timelineRef.current = null;
+        setIsPlaying(false);
+      });
+
+    return () => {
+      ignore = true;
+      controller.abort();
+    };
   }, [isActive]);
 
   const advanceTimeline = useCallback(() => {
@@ -95,7 +119,11 @@ export function useDemoSequence(isActive: boolean, advanceIntervalMs: number = 5
       });
 
       // 2. Apply Zone Deltas if present (LIVE-02)
-      if (event.zoneDeltas && event.zoneDeltas.length > 0 || event.eventType === "halftime" || event.eventType === "full-time") {
+      if (
+        (event.zoneDeltas && event.zoneDeltas.length > 0) ||
+        event.eventType === "halftime" ||
+        event.eventType === "full-time"
+      ) {
         const state = liveStore.getState();
         const baseInput = state.simConfig ?? presets.normal;
         

@@ -57,9 +57,10 @@ export async function GET(_request: NextRequest) {
     }));
 
     return Response.json({ match, upcomingMatch, allGames });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Network failure";
     return Response.json(
-      { error: err.message || "Network failure", status: "fetch_error" },
+      { error: message, status: "fetch_error" },
       { status: 502 }
     );
   }

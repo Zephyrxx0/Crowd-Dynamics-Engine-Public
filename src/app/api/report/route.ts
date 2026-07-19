@@ -5,6 +5,7 @@ import { rateLimit } from "@/lib/api/rateLimit";
 import { collectGeminiJson } from "@/lib/ai/collectGeminiJson";
 import { GeminiFetchError, GeminiRateLimitError } from "@/lib/ai/gemini";
 import { RiskReportSchema } from "@/reporting/contracts/riskReport.schema";
+import { buildDeterministicRiskReport } from "@/reporting/fallback/buildDeterministicRiskReport";
 import { buildGeminiRiskPrompt } from "@/reporting/gemini/buildPrompt";
 import { SimulationOutputSchema } from "@/simulation/contracts/output.schema";
 
@@ -14,6 +15,31 @@ export const maxDuration = 120;
 const ReportRequestSchema = z.object({
   output: SimulationOutputSchema,
 });
+
+type ReportFallbackReason =
+  | "api-key-not-configured"
+  | "ai-generation-failed"
+  | "ai-rate-limit"
+  | "invalid-ai-response";
+
+function fallbackResponse(output: z.infer<typeof SimulationOutputSchema>, reason: ReportFallbackReason) {
+  return Response.json(buildDeterministicRiskReport(output), {
+    status: 200,
+    headers: {
+      "X-Report-Source": "fallback",
+      "X-Report-Fallback-Reason": reason,
+    },
+  });
+}
+
+function parseAiReport(rawJson: string) {
+  const output = RiskReportSchema.safeParse(JSON.parse(rawJson));
+  if (!output.success || output.data.source !== "ai") {
+    return null;
+  }
+
+  return output.data;
+}
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
@@ -36,25 +62,27 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  try {
-    const rawJson = await collectGeminiJson(buildGeminiRiskPrompt(parsed.data.output), request.signal);
-    const output = RiskReportSchema.safeParse(JSON.parse(rawJson));
-    if (!output.success) {
-      return Response.json(
-        { error: "Invalid AI response", details: output.error.flatten() },
-        { status: 502 },
-      );
-    }
+  const prompt = buildGeminiRiskPrompt(parsed.data.output);
+  let fallbackReason: ReportFallbackReason = "ai-generation-failed";
 
-    return Response.json(output.data);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    if (error instanceof GeminiFetchError && error.message.includes("Missing GEMINI_API_KEY")) {
-      return Response.json({ error: "API key not configured" }, { status: 500 });
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const rawJson = await collectGeminiJson(prompt, request.signal);
+      const output = parseAiReport(rawJson);
+      if (output) {
+        return Response.json(output);
+      }
+      fallbackReason = "invalid-ai-response";
+    } catch (error) {
+      if (error instanceof GeminiFetchError && error.message.includes("Missing GEMINI_API_KEY")) {
+        return fallbackResponse(parsed.data.output, "api-key-not-configured");
+      }
+      if (error instanceof GeminiRateLimitError) {
+        return fallbackResponse(parsed.data.output, "ai-rate-limit");
+      }
+      fallbackReason = "ai-generation-failed";
     }
-    if (error instanceof GeminiRateLimitError) {
-      return Response.json({ error: "Rate limit reached — please try again" }, { status: 429 });
-    }
-    return Response.json({ error: message }, { status: 502 });
   }
+
+  return fallbackResponse(parsed.data.output, fallbackReason);
 }

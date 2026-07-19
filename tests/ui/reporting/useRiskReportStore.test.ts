@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { useRiskReportStore } from "@/hooks/useRiskReportStore"
+import { buildDeterministicRiskReport } from "@/reporting/fallback/buildDeterministicRiskReport"
 import { simulationOutputFixture } from "../fixtures/simulationOutput"
 
 const aiResponse = JSON.stringify({
@@ -82,5 +83,22 @@ describe("useRiskReportStore", () => {
 
     await useRiskReportStore.getState().retryReportGeneration()
     expect(invoke).toHaveBeenCalledTimes(2)
+  })
+
+  it("marks API-returned fallback reports as fallback status", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({
+        ok: true,
+        json: async () => buildDeterministicRiskReport(simulationOutputFixture),
+      }))
+    )
+
+    await useRiskReportStore.getState().generateFromSimulation(simulationOutputFixture)
+
+    const state = useRiskReportStore.getState()
+    expect(state.status).toBe("fallback")
+    expect(state.report?.source).toBe("fallback")
+    expect(state.errorMessage).toContain("deterministic fallback")
   })
 })
